@@ -2,12 +2,16 @@
 
 stdenv.mkDerivation rec {
   name    = "clang-analyzer-${version}";
-  version = "3.4";
+  version = "3.7.0";
 
   src = fetchurl {
-    url    = "http://llvm.org/releases/${version}/clang-${version}.src.tar.gz";
-    sha256 = "06rb4j1ifbznl3gfhl98s7ilj0ns01p7y7zap4p7ynmqnc6pia92";
+    url    = "http://llvm.org/releases/${version}/cfe-${version}.src.tar.xz";
+    sha256 = "1k517b0jj74c4vgnnd4ikbrpb96na541bi8q845ckw8xm72l1msf";
   };
+
+  patchPhase = ''
+    sourceRoot=$PWD/cfe-${version}
+  '';
 
   patches = [ ./0001-Fix-scan-build-to-use-NIX_CFLAGS_COMPILE.patch ];
   buildInputs = [ clang llvmPackages.clang perl makeWrapper ];
