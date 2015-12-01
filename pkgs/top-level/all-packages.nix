@@ -3887,8 +3887,8 @@ let
   clang_33 = wrapCC (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
 
   clang-analyzer = callPackage ../development/tools/analysis/clang-analyzer {
-    clang = clang_34;
-    llvmPackages = llvmPackages_34;
+    clang = clang_37;
+    llvmPackages = llvmPackages_37;
   };
 
   clangUnwrapped = llvm: pkg: callPackage pkg { inherit llvm; };
