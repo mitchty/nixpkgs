@@ -4056,8 +4056,8 @@ let
   clang_34 = wrapCC llvmPackages_34.clang;
 
   clang-analyzer = callPackage ../development/tools/analysis/clang-analyzer {
-    clang = clang_34;
-    llvmPackages = llvmPackages_34;
+    clang = clang_37;
+    llvmPackages = llvmPackages_37;
   };
 
   clangUnwrapped = llvm: pkg: callPackage pkg { inherit llvm; };
