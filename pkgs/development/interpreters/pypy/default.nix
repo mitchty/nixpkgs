@@ -1,6 +1,6 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2, pkgconfig, libffi
 , sqlite, openssl, ncurses, pythonFull, expat, tcl, tk, xlibsWrapper, libX11
-, makeWrapper, callPackage, self, gdbm, db }:
+, makeWrapper, callPackage, self, gdbm, db, libunwind }:
 
 assert zlibSupport -> zlib != null;
 
@@ -21,7 +21,7 @@ let
       sha256 = "1g7iipllgdfjgdkypsa1g2pzxgjw9agp40rh82hk31rsbak2hfbl";
     };
 
-    buildInputs = [ bzip2 openssl pkgconfig pythonFull libffi ncurses expat sqlite tk tcl xlibsWrapper libX11 makeWrapper gdbm db ]
+    buildInputs = [ bzip2 openssl pkgconfig pythonFull libffi ncurses expat sqlite tk tcl xlibsWrapper libX11 makeWrapper gdbm db libunwind ]
       ++ stdenv.lib.optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc
       ++ stdenv.lib.optional zlibSupport zlib;
 
@@ -122,7 +122,7 @@ let
       homepage = http://pypy.org/;
       description = "Fast, compliant alternative implementation of the Python language (2.7.8)";
       license = licenses.mit;
-      platforms = platforms.linux;
+      platforms = with platforms; linux ++ darwin;
       maintainers = with maintainers; [ iElectric ];
     };
   };
