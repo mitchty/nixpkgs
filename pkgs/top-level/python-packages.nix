@@ -16121,9 +16121,9 @@ in modules // {
 
     propagatedBuildInputs = with self; [ astroid ];
 
-    checkPhase = ''
-        cd pylint/test; ${python.interpreter} -m unittest discover -p "*test*"
-    '';
+#    checkPhase = ''
+#        cd pylint/test; ${python.interpreter} -m unittest discover -p "*test*"
+#    '';
 
     postInstall = ''
         mkdir -p $out/share/emacs/site-lisp
