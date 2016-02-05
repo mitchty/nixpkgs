@@ -8579,6 +8579,24 @@ in modules // {
     };
   };
 
+  flask_script = buildPythonPackage rec {
+    version = "2.0.5";
+    name = "Flask-Script-${version}";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/F/Flask-Script/${name}.tar.gz";
+      sha256 = "cef76eac751396355429a14c38967bb14d4973c53e07dec94af5cc8fb017107f";
+    };
+
+    propagatedBuildInputs = with self; [ self.six pytest werkzeug flask];
+
+    meta = {
+      homepage = "http://github.com/smurfix/flask-script";
+      description = "Flask support for writing external scripts.";
+      license = licenses.bsd3;
+    };
+  };
+
   flask-pymongo = buildPythonPackage rec {
     name = "Flask-PyMongo-${version}";
     version = "0.3.1";

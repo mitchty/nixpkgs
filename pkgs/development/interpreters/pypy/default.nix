@@ -1,6 +1,5 @@
 { stdenv, fetchurl, zlib ? null, zlibSupport ? true, bzip2, pkgconfig, libffi
-, sqlite, openssl, ncurses, pythonFull, expat, tcl, tk, xlibsWrapper, libX11
-, makeWrapper, callPackage, self, gdbm, db, libunwind }:
+, sqlite, openssl, ncurses, pythonFull, expat, makeWrapper, callPackage, self, gdbm, db, libunwind }:
 
 assert zlibSupport -> zlib != null;
 
@@ -21,7 +20,7 @@ let
       sha256 = "1g7iipllgdfjgdkypsa1g2pzxgjw9agp40rh82hk31rsbak2hfbl";
     };
 
-    buildInputs = [ bzip2 openssl pkgconfig pythonFull libffi ncurses expat sqlite tk tcl xlibsWrapper libX11 makeWrapper gdbm db libunwind ]
+    buildInputs = [ bzip2 openssl pkgconfig pythonFull libffi ncurses expat sqlite makeWrapper gdbm db libunwind ]
       ++ stdenv.lib.optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc
       ++ stdenv.lib.optional zlibSupport zlib;
 
@@ -37,12 +36,6 @@ let
         --replace "ncurses/curses.h" "${ncurses}/include/curses.h" \
         --replace "ncurses/term.h" "${ncurses}/include/term.h" \
         --replace "libraries=['curses']" "libraries=['ncurses']"
-
-      # tkinter hints
-      substituteInPlace lib_pypy/_tkinter/tklib_build.py \
-        --replace "'/usr/include/tcl'" "'${tk}/include', '${tcl}/include'" \
-        --replace "linklibs = ['tcl' + _ver, 'tk' + _ver]" "linklibs=['${tcl.libPrefix}', '${tk.libPrefix}']" \
-        --replace "libdirs = []" "libdirs = ['${tk}/lib', '${tcl}/lib']"
 
       sed -i "s@libraries=\['sqlite3'\]\$@libraries=['sqlite3'], include_dirs=['${sqlite}/include'], library_dirs=['${sqlite}/lib']@" lib_pypy/_sqlite3_build.py
     '';
@@ -60,7 +53,6 @@ let
         ../pypy-c ./_pwdgrp_build.py
         ../pypy-c ./_sqlite3_build.py
         ../pypy-c ./_syslog_build.py
-        ../pypy-c ./_tkinter/tklib_build.py
       cd ..
     '';
 
