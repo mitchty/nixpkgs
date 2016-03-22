@@ -540,6 +540,8 @@ let
 
   analog = callPackage ../tools/admin/analog {};
 
+  ansifilter = callPackage ../tools/text/ansifilter {};
+
   apktool = callPackage ../development/tools/apktool {
     buildTools = androidenv.buildTools;
   };
@@ -6328,9 +6330,7 @@ let
 
   texi2html = callPackage ../development/tools/misc/texi2html { };
 
-  uhd = callPackage ../development/tools/misc/uhd {
-    boost = boost155;
-  };
+  uhd = callPackage ../development/tools/misc/uhd { };
 
   uisp = callPackage ../development/tools/misc/uisp { };
 
