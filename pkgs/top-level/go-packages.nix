@@ -789,10 +789,11 @@ let
   };
 
   etcd = buildFromGitHub {
-    rev    = "v2.1.2";
+    rev    = "v2.3.0";
     owner  = "coreos";
     repo   = "etcd";
-    sha256 = "1d3wl9rqbhkkdhfkjfrzjfcwz8hx315zbjbmij3pf62bc1p5nh60";
+    sha256 = "1cchlhsdbbqal145cvdiq7rzqqi131iq7z0r2hmzwx414k04wyn7";
+    buildInputs = [ pkgs.libpcap tablewriter ];
   };
 
   fsnotify.v0 = buildGoPackage rec {
@@ -3300,6 +3301,16 @@ let
     owner  = "akavel";
     repo   = "rsrc";
     sha256 = "0g9fj10xnxcv034c8hpcgbhswv6as0d8l176c5nfgh1lh6klmmzc";
+  };
+
+  s3gof3r = buildFromGitHub rec {
+    owner    = "rlmcpherson";
+    repo     = "s3gof3r";
+    rev      = "v${version}";
+    version  = "0.5.0";
+    sha256   = "10banc8hnhxpsdmlkf9nc5fjkh1349bgpd9k7lggw3yih1rvmh7k";
+    disabled = isGo14;
+    propagatedBuildInputs = [ go-flags ];
   };
 
   sandblast = buildGoPackage rec {

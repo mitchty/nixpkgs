@@ -1,5 +1,5 @@
 { stdenv, fetchurl, glib, flex, bison, pkgconfig, libffi, python
-, libintlOrEmpty, autoconf, automake, otool
+, libintlOrEmpty, cctools
 , substituteAll, nixStoreDir ? builtins.storeDir
 }:
 # now that gobjectIntrospection creates large .gir files (eg gtk3 case)
@@ -10,6 +10,7 @@ let
   ver_maj = "1.46";
   ver_min = "0";
 in
+with stdenv.lib;
 stdenv.mkDerivation rec {
   name = "gobject-introspection-${ver_maj}.${ver_min}";
 
@@ -20,11 +21,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ flex bison pkgconfig python ]
     ++ libintlOrEmpty
-    ++ stdenv.lib.optional stdenv.isDarwin otool;
+    ++ stdenv.lib.optional stdenv.isDarwin cctools;
   propagatedBuildInputs = [ libffi glib ];
 
-  # Tests depend on cairo, which is undesirable (it pulls in lots of
-  # other dependencies).
+  # The '--disable-tests' flag is no longer recognized, so can be safely removed
+  # next time this package changes.
   configureFlags = [ "--disable-tests" ];
 
   preConfigure = ''
@@ -38,6 +39,9 @@ stdenv.mkDerivation rec {
   patches = stdenv.lib.singleton (substituteAll {
     src = ./absolute_shlib_path.patch;
     inherit nixStoreDir;
+  }) ++ optional stdenv.isDarwin (substituteAll {
+    src = ./darwin-fixups.patch;
+    inherit nixStoreDir;
   });
 
   meta = with stdenv.lib; {
@@ -45,7 +49,6 @@ stdenv.mkDerivation rec {
     homepage    = http://live.gnome.org/GObjectIntrospection;
     maintainers = with maintainers; [ lovek323 urkud lethalman ];
     platforms   = platforms.unix;
-    broken      = stdenv.isDarwin;
 
     longDescription = ''
       GObject introspection is a middleware layer between C libraries (using
