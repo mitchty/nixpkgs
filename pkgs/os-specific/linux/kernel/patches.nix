@@ -35,6 +35,16 @@ in
 
 rec {
 
+  link_lguest =
+    { name = "gcc5-link-lguest";
+      patch = ./gcc5-link-lguest.patch;
+    };
+
+  link_apm =
+    { name = "gcc5-link-apm";
+      patch = ./gcc5-link-apm.patch;
+    };
+
   bridge_stp_helper =
     { name = "bridge-stp-helper";
       patch = ./bridge-stp-helper.patch;
@@ -61,14 +71,9 @@ rec {
       patch = ./mips-ext3-n32.patch;
     };
 
-  ubuntu_fan =
+  ubuntu_fan_4_4 =
     { name = "ubuntu-fan";
-      patch = ./ubuntu-fan-3.patch;
-    };
-
-  ubuntu_fan_4 =
-    { name = "ubuntu-fan";
-      patch = ./ubuntu-fan-4.patch;
+      patch = ./ubuntu-fan-4.4.patch;
     };
 
   ubuntu_unprivileged_overlayfs =
