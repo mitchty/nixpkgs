@@ -154,7 +154,6 @@ self: super: {
   gl = dontHaddock super.gl;
   groupoids = dontHaddock super.groupoids;
   hamlet = dontHaddock super.hamlet;
-  haste-compiler = dontHaddock super.haste-compiler;
   HaXml = dontHaddock super.HaXml;
   HDBC-odbc = dontHaddock super.HDBC-odbc;
   hoodle-core = dontHaddock super.hoodle-core;
@@ -221,8 +220,8 @@ self: super: {
     else super.x509-system;
 
   double-conversion = if !pkgs.stdenv.isDarwin
-    then super.double-conversion
-    else addBuildDepend (overrideCabal super.double-conversion (drv:
+    then addExtraLibrary super.double-conversion pkgs.stdenv.cc.cc.lib
+    else addExtraLibrary (overrideCabal super.double-conversion (drv:
       {
         postPatch = ''
           substituteInPlace double-conversion.cabal --replace stdc++ c++
@@ -964,4 +963,8 @@ self: super: {
   # https://github.com/danidiaz/pipes-transduce/issues/2
   pipes-transduce = super.pipes-transduce.override { foldl = self.foldl_1_1_6; };
 
+  # Haste stuff
+  haste-Cabal         = self.callPackage ../tools/haskell/haste/haste-Cabal.nix {};
+  haste-cabal-install = self.callPackage ../tools/haskell/haste/haste-cabal-install.nix { Cabal = self.haste-Cabal; HTTP = self.HTTP_4000_2_23; };
+  haste-compiler      = self.callPackage ../tools/haskell/haste/haste-compiler.nix { inherit overrideCabal; super-haste-compiler = super.haste-compiler; };
 }
