@@ -150,7 +150,7 @@
   havvy = "Ryan Scheel <ryan.havvy@gmail.com>";
   hbunke = "Hendrik Bunke <bunke.hendrik@gmail.com>";
   henrytill = "Henry Till <henrytill@gmail.com>";
-  hiberno = "Christian Lask <mail@elfsechsundzwanzig.de>";
+  hiberno = "Christian Lask <hiberno@hiberno.net>";
   hinton = "Tom Hinton <t@larkery.com>";
   hrdinka = "Christoph Hrdinka <c.nix@hrdinka.at>";
   iand675 = "Ian Duncan <ian@iankduncan.com>";
@@ -243,6 +243,7 @@
   mtreskin = "Max Treskin <zerthurd@gmail.com>";
   mudri = "James Wood <lamudri@gmail.com>";
   muflax = "Stefan Dorn <mail@muflax.com>";
+  myrl = "Myrl Hex <myrl.0xf@gmail.com>";
   nathan-gs = "Nathan Bijnens <nathan@nathan.gs>";
   nckx = "Tobias Geerinckx-Rice <tobias.geerinckx.rice@gmail.com>";
   nequissimus = "Tim Steinbach <tim@nequissimus.com>";
@@ -371,6 +372,7 @@
   vlstill = "Vladimír Štill <xstill@fi.muni.cz>";
   vmandela = "Venkateswara Rao Mandela <venkat.mandela@gmail.com>";
   vozz = "Oliver Hunt <oliver.huntuk@gmail.com>";
+  vrthra = "Rahul Gopinath <rahul@gopinath.org>";
   wedens = "wedens <kirill.wedens@gmail.com>";
   willtim = "Tim Philip Williams <tim.williams.public@gmail.com>";
   winden = "Antonio Vargas Gonzalez <windenntw@gmail.com>";
