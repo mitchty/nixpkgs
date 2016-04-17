@@ -11334,6 +11334,8 @@ in
 
   hack-font = callPackage ../data/fonts/hack { };
 
+  helvetica-neue-lt-std = callPackage ../data/fonts/helvetica-neue-lt-std { };
+
   hicolor_icon_theme = callPackage ../data/icons/hicolor-icon-theme { };
 
   hanazono = callPackage ../data/fonts/hanazono { };
@@ -16035,7 +16037,7 @@ in
 
   beep = callPackage ../misc/beep { };
 
-  brgenml1lpr = callPackage ../misc/cups/drivers/brgenml1lpr {};
+  brgenml1lpr = callPackage_i686 ../misc/cups/drivers/brgenml1lpr {};
 
   brgenml1cupswrapper = callPackage ../misc/cups/drivers/brgenml1cupswrapper {};
 
@@ -16558,7 +16560,6 @@ in
 
   higan = callPackage ../misc/emulators/higan {
     inherit (gnome) gtksourceview;
-    profile = config.higan.profile or "balanced";
   };
 
   misc = callPackage ../misc/misc.nix { };
@@ -16574,4 +16575,6 @@ in
   togglesg-download = callPackage ../tools/misc/togglesg-download { };
 
   discord = callPackage ../applications/networking/instant-messengers/discord { };
+
+  golden-cheetah = qt5.callPackage ../applications/misc/golden-cheetah {};
 }
