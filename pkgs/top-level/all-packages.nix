@@ -2195,6 +2195,8 @@ in
 
   leafpad = callPackage ../applications/editors/leafpad { };
 
+  leatherman = callPackage ../development/libraries/leatherman {};
+
   leela = callPackage ../tools/graphics/leela { };
 
   lftp = callPackage ../tools/networking/lftp { };
@@ -3227,6 +3229,8 @@ in
   };
 
   snort = callPackage ../applications/networking/ids/snort { };
+
+  softhsm = callPackage ../tools/security/softhsm { };
 
   solr = callPackage ../servers/search/solr { };
 
@@ -5242,6 +5246,8 @@ in
   };
 
   angelscript = callPackage ../development/interpreters/angelscript {};
+
+  angelscript_2_22 = callPackage ../development/interpreters/angelscript/2.22.nix {};
 
   chibi = callPackage ../development/interpreters/chibi { };
 
@@ -10110,7 +10116,7 @@ in
 
   microcodeIntel = callPackage ../os-specific/linux/microcode/intel.nix { };
 
-  inherit (callPackages ../os-specific/linux/apparmor { swig = swig2; })
+  inherit (callPackages ../os-specific/linux/apparmor { pythonPackages = python27Packages; swig = swig2; })
     libapparmor apparmor-pam apparmor-parser apparmor-profiles apparmor-utils;
 
   atop = callPackage ../os-specific/linux/atop { };
@@ -14940,6 +14946,13 @@ in
     openglSupport = mesaSupported;
   };
 
+  rigsofrods = callPackage ../games/rigsofrods {
+    angelscript = angelscript_2_22;
+    mygui = mygui.override {
+      withOgre = true;
+    };
+  };
+
   rili = callPackage ../games/rili { };
 
   rimshot = callPackage ../games/rimshot { love = love_0_7; };
@@ -16035,6 +16048,8 @@ in
 
   auctex = callPackage ../tools/typesetting/tex/auctex { };
 
+  areca = callPackage ../applications/backup/areca { };
+
   beep = callPackage ../misc/beep { };
 
   brgenml1lpr = callPackage_i686 ../misc/cups/drivers/brgenml1lpr {};
@@ -16576,5 +16591,5 @@ in
 
   discord = callPackage ../applications/networking/instant-messengers/discord { };
 
-  golden-cheetah = qt5.callPackage ../applications/misc/golden-cheetah {};
+  #golden-cheetah = qt5.callPackage ../applications/misc/golden-cheetah {};
 }
