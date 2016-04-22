@@ -523,6 +523,8 @@ in
     qt4Support = config.avahi.qt4Support or false;
   };
 
+  avro-cpp = callPackage ../development/libraries/avro-c++ { };
+
   aws = callPackage ../tools/virtualization/aws { };
 
   aws_mturk_clt = callPackage ../tools/misc/aws-mturk-clt { };
@@ -1937,7 +1939,7 @@ in
 
   iasl = callPackage ../development/compilers/iasl { };
 
-  iannix = callPackage ../applications/audio/iannix { };
+  iannix = qt5.callPackage ../applications/audio/iannix { };
 
   icecast = callPackage ../servers/icecast { };
 
@@ -2376,7 +2378,11 @@ in
 
   minixml = callPackage ../development/libraries/minixml { };
 
-  mjpegtools = callPackage ../tools/video/mjpegtools { };
+  mjpegtoolsFull = callPackage ../tools/video/mjpegtools { };
+
+  mjpegtools = self.mjpegtoolsFull.override {
+    withMinimal = true;
+  };
 
   mkcue = callPackage ../tools/cd-dvd/mkcue { };
 
@@ -2777,6 +2783,8 @@ in
 
   patchage = callPackage ../applications/audio/patchage { };
 
+  pcapfix = callPackage ../tools/networking/pcapfix { };
+
   pbzip2 = callPackage ../tools/compression/pbzip2 { };
 
   pciutils = callPackage ../tools/system/pciutils { };
@@ -2968,13 +2976,10 @@ in
 
   qalculate-gtk = callPackage ../applications/science/math/qalculate-gtk { };
 
-  qastools = callPackage ../tools/audio/qastools {
-    qt = qt4;
-  };
+  qastools = callPackage ../tools/audio/qastools { };
 
   qgifer = callPackage ../applications/video/qgifer {
     giflib = giflib_4_1;
-    qt = qt4;
   };
 
   qhull = callPackage ../development/libraries/qhull { };
@@ -2985,9 +2990,7 @@ in
 
   qprint = callPackage ../tools/text/qprint { };
 
-  qscintilla = callPackage ../development/libraries/qscintilla {
-    qt = qt4;
-  };
+  qscintilla = callPackage ../development/libraries/qscintilla { };
 
   qshowdiff = callPackage ../tools/text/qshowdiff { };
 
@@ -3144,7 +3147,7 @@ in
   screen-message = callPackage ../tools/X11/screen-message { };
 
   screencloud = callPackage ../applications/graphics/screencloud {
-    quazip = qt5.quazip.override { qt = qt4; };
+    quazip = qt5.quazip.override { qt = qt4; qmakeHook = qmake4Hook; };
   };
 
   scrot = callPackage ../tools/graphics/scrot { };
@@ -3673,6 +3676,8 @@ in
   xarchive = callPackage ../tools/archivers/xarchive { };
 
   xarchiver = callPackage ../tools/archivers/xarchiver { };
+
+  xbanish = callPackage ../tools/X11/xbanish { };
 
   xbrightness = callPackage ../tools/X11/xbrightness { };
 
@@ -5690,10 +5695,7 @@ in
 
   astyle = callPackage ../development/tools/misc/astyle { };
 
-  electron = callPackage ../development/tools/electron {
-    gconf = pkgs.gnome.GConf;
-  };
-
+  electron = callPackage ../development/tools/electron { };
 
   autobuild = callPackage ../development/tools/misc/autobuild { };
 
@@ -6066,6 +6068,8 @@ in
 
   jenkins-job-builder = pythonPackages.jenkins-job-builder;
 
+  kconfig-frontends = callPackage ../development/tools/misc/kconfig-frontends { };
+
   kcov = callPackage ../development/tools/analysis/kcov { };
 
   lcov = callPackage ../development/tools/analysis/lcov { };
@@ -6297,6 +6301,8 @@ in
   );
 
   texi2html = callPackage ../development/tools/misc/texi2html { };
+
+  tinc-haskell = haskellPackages.callPackage ../development/tools/misc/tinc { };
 
   travis = callPackage ../development/tools/misc/travis { };
 
@@ -7380,7 +7386,7 @@ in
 
   libcm = callPackage ../development/libraries/libcm { };
 
-  libcommuni = callPackage ../development/libraries/libcommuni { };
+  libcommuni = qt5.callPackage ../development/libraries/libcommuni { };
 
   libconfuse = callPackage ../development/libraries/libconfuse { };
 
@@ -7536,7 +7542,9 @@ in
 
   libechonest = callPackage ../development/libraries/libechonest { };
 
-  libev = callPackage ../development/libraries/libev { };
+  libev = callPackage ../development/libraries/libev {
+    fetchurl = fetchurlBoot;
+  };
 
   libevent = callPackage ../development/libraries/libevent { };
 
@@ -8254,6 +8262,8 @@ in
 
   mythes = callPackage ../development/libraries/mythes { };
 
+  nanoflann = callPackage ../development/libraries/nanoflann { };
+
   nanomsg = callPackage ../development/libraries/nanomsg { };
 
   notify-sharp = callPackage ../development/libraries/notify-sharp { };
@@ -8276,11 +8286,10 @@ in
 
   newt = callPackage ../development/libraries/newt { };
 
-  nghttp2 = callPackage ../development/libraries/nghttp2 { };
-  libnghttp2 = self.nghttp2.override {
-    prefix = "lib";
+  nghttp2 = callPackage ../development/libraries/nghttp2 {
     fetchurl = fetchurlBoot;
   };
+  libnghttp2 = nghttp2.lib;
 
   nix-plugins = callPackage ../development/libraries/nix-plugins {
     nix = pkgs.nixUnstable;
@@ -8431,7 +8440,7 @@ in
 
   pdf2xml = callPackage ../development/libraries/pdf2xml {} ;
 
-  phonon = callPackage ../development/libraries/phonon/qt4 {};
+  phonon = callPackage ../development/libraries/phonon {};
 
   phonon_backend_gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer/qt4 {};
 
@@ -8460,7 +8469,7 @@ in
     spidermonkey = spidermonkey_17;
   };
 
-  polkit_qt4 = callPackage ../development/libraries/polkit-qt-1 { };
+  polkit_qt4 = callPackage ../development/libraries/polkit-qt-1/qt-4.nix { };
 
   poppler = callPackage ../development/libraries/poppler { lcms = lcms2; };
 
@@ -8530,7 +8539,16 @@ in
 
     # XXX: mariadb doesn't built on fbsd as of nov 2015
     mysql = if (!stdenv.isFreeBSD) then mysql else null;
+
+    inherit (pkgs.darwin) cf-private libobjc;
+    inherit (pkgs.darwin.apple_sdk.frameworks) ApplicationServices OpenGL Cocoa AGL;
   };
+
+  qmake48Hook = makeSetupHook
+    { substitutions = { qt4 = qt48; }; }
+    ../development/libraries/qt-4.x/4.8/qmake-hook.sh;
+
+  qmake4Hook = qmake48Hook;
 
   qt48Full = appendToName "full" (qt48.override {
     docs = true;
@@ -8563,15 +8581,13 @@ in
 
     openbr = callPackage ../development/libraries/openbr { };
 
-    phonon = callPackage ../development/libraries/phonon/qt5 { };
+    phonon = callPackage ../development/libraries/phonon { };
 
     phonon-backend-gstreamer = callPackage ../development/libraries/phonon-backend-gstreamer/qt5 { };
 
     phonon-backend-vlc = callPackage ../development/libraries/phonon-backend-vlc/qt5 { };
 
-    polkit-qt = callPackage ../development/libraries/polkit-qt-1 {
-      withQt5 = true;
-    };
+    polkit-qt = callPackage ../development/libraries/polkit-qt-1/qt-5.nix { };
 
     poppler = callPackage ../development/libraries/poppler {
       lcms = lcms2;
@@ -8937,7 +8953,11 @@ in
 
   unicap = callPackage ../development/libraries/unicap {};
 
-  tsocks = callPackage ../development/libraries/tsocks { };
+  tsocks = callPackage ../development/libraries/tsocks {
+    stdenv = overrideCC stdenv (
+      wrapCCWith (callPackage ../build-support/cc-wrapper)
+      musl "" gcc.cc);
+  };
 
   unixODBC = callPackage ../development/libraries/unixODBC { };
 
@@ -9151,9 +9171,7 @@ in
     libusb = libusb1;
   };
 
-  yubikey-personalization-gui = callPackage ../tools/misc/yubikey-personalization-gui {
-    qt = qt4;
-  };
+  yubikey-personalization-gui = callPackage ../tools/misc/yubikey-personalization-gui { };
 
   zeitgeist = callPackage ../development/libraries/zeitgeist { };
 
@@ -10420,6 +10438,10 @@ in
 
   kernelPatches = callPackage ../os-specific/linux/kernel/patches.nix { };
 
+  klibc = callPackage ../os-specific/linux/klibc { };
+
+  klibcShrunk = lowPrio (callPackage ../os-specific/linux/klibc/shrunk.nix { });
+
   linux_mptcp = callPackage ../os-specific/linux/kernel/linux-mptcp.nix {
     kernelPatches = [ kernelPatches.bridge_stp_helper ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
@@ -10636,6 +10658,8 @@ in
 
     cpupower = callPackage ../os-specific/linux/cpupower { };
 
+    dpdk = callPackage ../os-specific/linux/dpdk { };
+
     e1000e = callPackage ../os-specific/linux/e1000e {};
 
     v4l2loopback = callPackage ../os-specific/linux/v4l2loopback { };
@@ -10664,12 +10688,6 @@ in
     openafsClient = callPackage ../servers/openafs-client { };
 
     facetimehd = callPackage ../os-specific/linux/facetimehd { };
-
-    kernelHeaders = callPackage ../os-specific/linux/kernel-headers { };
-
-    klibc = callPackage ../os-specific/linux/klibc { };
-
-    klibcShrunk = lowPrio (callPackage ../os-specific/linux/klibc/shrunk.nix { });
 
     jool = callPackage ../os-specific/linux/jool { };
 
@@ -11625,9 +11643,11 @@ in
 
   artha = callPackage ../applications/misc/artha { };
 
-  atom = callPackage ../applications/editors/atom {
+  atomEnv = callPackage ../applications/editors/atom/env.nix {
     gconf = gnome.GConf;
   };
+
+  atom = callPackage ../applications/editors/atom { };
 
   aseprite = callPackage ../applications/editors/aseprite {
     giflib = giflib_4_1;
@@ -12980,6 +13000,26 @@ in
     };
   };
 
+  libreoffice-still = lowPrio (callPackage ../applications/office/libreoffice/still.nix {
+    inherit (perlPackages) ArchiveZip CompressZlib;
+    inherit (gnome) GConf ORBit2 gnome_vfs;
+    inherit (gnome3) gsettings_desktop_schemas defaultIconTheme;
+    zip = zip.override { enableNLS = false; };
+    #glm = glm_0954;
+    bluez5 = bluez5_28;
+    fontsConf = makeFontsConf {
+      fontDirectories = [
+        freefont_ttf xorg.fontmiscmisc xorg.fontbhttf
+      ];
+    };
+    clucene_core = clucene_core_2;
+    lcms = lcms2;
+    harfbuzz = harfbuzz.override {
+      withIcu = true; withGraphite2 = true;
+    };
+  });
+
+
   liferea = callPackage ../applications/networking/newsreaders/liferea {
     webkitgtk = webkitgtk24x;
   };
@@ -13642,13 +13682,9 @@ in
 
   remotebox = callPackage ../applications/virtualization/remotebox { };
 
-  retroshare = callPackage ../applications/networking/p2p/retroshare {
-    qt = qt4;
-  };
+  retroshare = callPackage ../applications/networking/p2p/retroshare { };
 
-  retroshare06 = lowPrio (callPackage ../applications/networking/p2p/retroshare/0.6.nix {
-    qt = qt4;
-  });
+  retroshare06 = lowPrio (callPackage ../applications/networking/p2p/retroshare/0.6.nix { });
 
   RhythmDelay = callPackage ../applications/audio/RhythmDelay { };
 
@@ -14231,9 +14267,7 @@ in
 
   vorbis-tools = callPackage ../applications/audio/vorbis-tools { };
 
-  vscode = callPackage ../applications/editors/vscode {
-    gconf = pkgs.gnome.GConf;
-  };
+  vscode = callPackage ../applications/editors/vscode { };
 
   vue = callPackage ../applications/misc/vue { };
 
@@ -14570,9 +14604,7 @@ in
 
   qgroundcontrol = qt55.callPackage ../applications/science/robotics/qgroundcontrol { };
 
-  qtbitcointrader = callPackage ../applications/misc/qtbitcointrader {
-    qt = qt4;
-  };
+  qtbitcointrader = callPackage ../applications/misc/qtbitcointrader { };
 
   pahole = callPackage ../development/tools/misc/pahole {};
 
@@ -14769,6 +14801,8 @@ in
   };
 
   freedink = callPackage ../games/freedink { };
+
+  freeorion = callPackage ../games/freeorion { };
 
   fsg = callPackage ../games/fsg {
     wxGTK = wxGTK28.override { unicode = false; };
@@ -16587,9 +16621,11 @@ in
 
   mg = callPackage ../applications/editors/mg { };
 
+  aucdtect = callPackage ../tools/audio/aucdtect { };
+
   togglesg-download = callPackage ../tools/misc/togglesg-download { };
 
   discord = callPackage ../applications/networking/instant-messengers/discord { };
 
-  #golden-cheetah = qt5.callPackage ../applications/misc/golden-cheetah {};
+  golden-cheetah = qt5.callPackage ../applications/misc/golden-cheetah {};
 }

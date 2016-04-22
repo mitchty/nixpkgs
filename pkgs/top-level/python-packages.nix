@@ -166,10 +166,9 @@ in modules // {
     pythonPackages = self;
   };
 
-  pyqt5 = callPackage ../development/python-modules/pyqt/5.x.nix {
+  pyqt5 = pkgs.qt55.callPackage ../development/python-modules/pyqt/5.x.nix {
     sip = self.sip_4_16;
     pythonDBus = self.dbus;
-    inherit (pkgs.qt55) qtbase qtsvg qtwebkit;
   };
 
   pyside = callPackage ../development/python-modules/pyside { };
@@ -5696,6 +5695,25 @@ in modules // {
     meta = with stdenv.lib; {
       description = "This is a backport of the functools standard library module from";
       homepage = "https://github.com/MiCHiLU/python-functools32";
+    };
+  };
+
+  gandi-cli = buildPythonPackage rec {
+    name = "gandi-cli-${version}";
+    version = "0.18";
+    src = pkgs.fetchFromGitHub {
+      sha256 = "045gnz345nfbi1g7j3gcyzrxrx3hcidaxzr05cb49rcr8nmqh1s3";
+      rev = version;
+      repo = "gandi.cli";
+      owner = "Gandi";
+    };
+    propagatedBuildInputs = with self; [ click ipy pyyaml requests ];
+    doCheck = false;	# Tests try to contact the actual remote API
+    meta = {
+      homepage = http://cli.gandi.net/;
+      description = "Command-line interface to the public Gandi.net API";
+      license = licenses.gpl3Plus;
+      maintainers = with maintainers; [ nckx ];
     };
   };
 
@@ -24425,13 +24443,13 @@ in modules // {
   };
 
   libvirt = let
-    version = "1.3.2";
+    version = "1.3.3";
   in assert version == pkgs.libvirt.version; pkgs.stdenv.mkDerivation rec {
     name = "libvirt-python-${version}";
 
     src = pkgs.fetchurl {
       url = "http://libvirt.org/sources/python/${name}.tar.gz";
-      sha256 = "1y0b2sglc6q43pw1sr0by5wx8037kvrp2969p69k6mq1g2gawdbd";
+      sha256 = "0jhf1h4zdysxf5mj769l5ddcbs5j3mzj4sdy8gp4kbj4imwaws5a";
     };
 
     buildInputs = with self; [ python pkgs.pkgconfig pkgs.libvirt lxml ];
@@ -26423,4 +26441,64 @@ in modules // {
     };
   };
 
+  w3lib = buildPythonPackage rec {
+    name = "w3lib-${version}";
+    version = "1.14.2";
+
+    buildInputs = with self ; [ six pytest ];
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/w/w3lib/${name}.tar.gz";
+      sha256 = "bd87eae62d208eef70869951abf05e96a8ee559714074a485168de4c5b190004";
+    };
+
+    meta = {
+      description = "A library of web-related functions";
+      homepage = "https://github.com/scrapy/w3lib";
+      license = licenses.bsd3;
+      maintainers = with maintainers; [ drewkett ];
+    };
+  };
+
+  queuelib = buildPythonPackage rec {
+    name = "queuelib-${version}";
+    version = "1.4.2";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/q/queuelib/${name}.tar.gz";
+      sha256 = "a6829918157ed433fafa87b0bb1e93e3e63c885270166db5884a02c34c86f914";
+    };
+
+    buildInputs = with self ; [ pytest ];
+
+    meta = {
+      description = "A collection of persistent (disk-based) queues for Python";
+      homepage = "https://github.com/scrapy/queuelib";
+      license = licenses.bsd3;
+      maintainers = with maintainers; [ drewkett ];
+    };
+  };
+
+  scrapy = buildPythonPackage rec {
+    name = "Scrapy-${version}";
+    version = "1.0.5";
+
+    disabled = isPy3k;
+
+    buildInputs = with self ; [ pytest ];
+    propagatedBuildInputs = with self ; [ six twisted w3lib lxml cssselect queuelib pyopenssl service-identity ];
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/S/Scrapy/${name}.tar.gz";
+      sha256 = "0a51c785a310d65f6e70285a2da56d48ef7d049bd7fd60a08eef05c52328ca96";
+    };
+
+    meta = {
+      description = "A fast high-level web crawling and web scraping framework, used to crawl websites and extract structured data from their pages";
+      homepage = "http://scrapy.org/";
+      license = licenses.bsd3;
+      maintainers = with maintainers; [ drewkett ];
+      platforms = platforms.linux;
+    };
+  };
 }

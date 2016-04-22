@@ -47,7 +47,6 @@
   ./i18n/input-method/nabi.nix
   ./i18n/input-method/uim.nix
   ./installer/tools/auto-upgrade.nix
-  ./installer/tools/nixos-checkout.nix
   ./installer/tools/tools.nix
   ./misc/assertions.nix
   ./misc/crashdump.nix
@@ -71,6 +70,7 @@
   ./programs/kbdlight.nix
   ./programs/light.nix
   ./programs/man.nix
+  ./programs/mosh.nix
   ./programs/nano.nix
   ./programs/screen.nix
   ./programs/shadow.nix
@@ -158,6 +158,7 @@
   ./services/desktops/gnome3/tracker.nix
   ./services/desktops/profile-sync-daemon.nix
   ./services/desktops/telepathy.nix
+  ./services/development/hoogle.nix
   ./services/games/factorio.nix
   ./services/games/ghost-one.nix
   ./services/games/minecraft-server.nix
