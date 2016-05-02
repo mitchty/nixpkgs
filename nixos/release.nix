@@ -103,8 +103,7 @@ in rec {
   # Build the initial ramdisk so Hydra can keep track of its size over time.
   initialRamdisk = buildFromConfig ({ pkgs, ... }: { }) (config: config.system.build.initialRamdisk);
 
-
-  netboot = let build = (import lib/eval-config.nix {
+  netboot.x86_64-linux = let build = (import lib/eval-config.nix {
       system = "x86_64-linux";
       modules = [
         ./modules/installer/netboot/netboot-minimal.nix
@@ -112,11 +111,11 @@ in rec {
       ];
     }).config.system.build;
   in
-    pkgs.symlinkJoin "netboot" [
+    pkgs.symlinkJoin {name="netboot"; paths=[
       build.netbootRamdisk
       build.kernel
       build.netbootIpxeScript
-    ];
+    ];};
 
   iso_minimal = forAllSystems (system: makeIso {
     module = ./modules/installer/cd-dvd/installation-cd-minimal.nix;

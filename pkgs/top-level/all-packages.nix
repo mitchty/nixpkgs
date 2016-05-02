@@ -156,8 +156,6 @@ in
 
   dispad = callPackage ../tools/X11/dispad { };
 
-  scatterOutputHook = makeSetupHook {} ../build-support/setup-hooks/scatter_output.sh;
-
   vsenv = callPackage ../build-support/vsenv {
     vs = vs90wrapper;
   };
@@ -1653,8 +1651,6 @@ in
 
   gifsicle = callPackage ../tools/graphics/gifsicle { };
 
-  git-hub = callPackage ../applications/version-management/git-and-tools/git-hub { };
-
   git-lfs = goPackages.git-lfs.bin // { outputs = [ "bin" ]; };
 
   gitfs = callPackage ../tools/filesystems/gitfs { };
@@ -2176,17 +2172,21 @@ in
 
   ninka = callPackage ../development/tools/misc/ninka { };
 
-  nodejs-5_x = callPackage ../development/web/nodejs/v5.nix {
+  nodejs-0_10 = callPackage ../development/web/nodejs/v0_10.nix {
     libtool = darwin.cctools;
+    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices Carbon Foundation;
   };
 
   nodejs-4_x = callPackage ../development/web/nodejs/v4.nix {
     libtool = darwin.cctools;
   };
 
-  nodejs-0_10 = callPackage ../development/web/nodejs/v0_10.nix {
+  nodejs-5_x = callPackage ../development/web/nodejs/v5.nix {
     libtool = darwin.cctools;
-    inherit (darwin.apple_sdk.frameworks) CoreServices ApplicationServices Carbon Foundation;
+  };
+
+  nodejs-6_x = callPackage ../development/web/nodejs/v6.nix {
+    libtool = darwin.cctools;
   };
 
   nodejs = if stdenv.system == "armv5tel-linux" then
@@ -3176,8 +3176,10 @@ in
   screen-message = callPackage ../tools/X11/screen-message { };
 
   screencloud = callPackage ../applications/graphics/screencloud {
-    quazip = qt5.quazip.override { qt = qt4; qmakeHook = qmake4Hook; };
+    quazip = quazip_qt4;
   };
+
+  quazip_qt4 = self.qt5.quazip.override { qt = qt4; qmakeHook = qmake4Hook; };
 
   scrot = callPackage ../tools/graphics/scrot { };
 
@@ -3190,6 +3192,8 @@ in
   sec = callPackage ../tools/admin/sec { };
 
   seccure = callPackage ../tools/security/seccure { };
+
+  securefs = callPackage ../tools/filesystems/securefs { };
 
   setroot = callPackage  ../tools/X11/setroot { };
 
@@ -3460,9 +3464,9 @@ in
 
   tor-arm = callPackage ../tools/security/tor/tor-arm.nix { };
 
-  torbutton = callPackage ../tools/security/torbutton { };
-
-  torbrowser = callPackage ../tools/security/tor/torbrowser.nix { };
+  torbrowser = callPackage ../tools/security/tor/torbrowser.nix {
+    inherit (xorg) libXrender libX11 libXext libXt;
+  };
 
   touchegg = callPackage ../tools/inputmethods/touchegg { };
 
@@ -3680,6 +3684,7 @@ in
   };
 
   truecrypt = callPackage ../applications/misc/truecrypt {
+    stdenv = overrideInStdenv stdenv [ useOldCXXAbi ];
     wxGUI = config.truecrypt.wxGUI or true;
   };
 
@@ -4027,6 +4032,8 @@ in
 
   ccl = callPackage ../development/compilers/ccl { };
 
+  chez = callPackage ../development/compilers/chez { };
+
   clang = llvmPackages.clang;
 
   clang_38 = llvmPackages_38.clang;
@@ -4368,7 +4375,6 @@ in
   hxcpp = callPackage ../development/compilers/haxe/hxcpp.nix { };
 
   hhvm = callPackage ../development/compilers/hhvm { };
-  hiphopvm = self.hhvm; /* Compatibility alias */
 
   hop = callPackage ../development/compilers/hop { };
 
@@ -5813,7 +5819,9 @@ in
       inherit rustc;
     };
 
-  casperjs = callPackage ../development/tools/casperjs { };
+  casperjs = callPackage ../development/tools/casperjs {
+    inherit (texFunctions) fontsConf;
+  };
 
   cbrowser = callPackage ../development/tools/misc/cbrowser { };
 
@@ -6467,13 +6475,13 @@ in
   beecrypt = callPackage ../development/libraries/beecrypt { };
 
   beignet = callPackage ../development/libraries/beignet {
-    inherit (llvmPackages) clang-unwrapped; 
-    inherit (xlibs) libX11; 
-    inherit (xorg) libXfixes libpthreadstubs libXdmcp libXdamage libXxf86vm; 
-    inherit (python3Packages) python; 
-    inherit (purePackages) gl; 
-  }; 
-  
+    inherit (llvmPackages) clang-unwrapped;
+    inherit (xlibs) libX11;
+    inherit (xorg) libXfixes libpthreadstubs libXdmcp libXdamage libXxf86vm;
+    inherit (python3Packages) python;
+    inherit (purePackages) gl;
+  };
+
   belle-sip = callPackage ../development/libraries/belle-sip { };
 
   bobcat = callPackage ../development/libraries/bobcat { };
@@ -9994,6 +10002,8 @@ in
     inherit (darwin.apple_sdk.frameworks) AppKit Carbon Cocoa;
   };
 
+  rake = callPackage ../development/tools/build-managers/rake { };
+  
   redis = callPackage ../servers/nosql/redis { };
 
   redstore = callPackage ../servers/http/redstore { };
@@ -10460,6 +10470,8 @@ in
 
   openiscsi = callPackage ../os-specific/linux/open-iscsi { };
 
+  openisns = callPackage ../os-specific/linux/open-isns { };
+
   tgt = callPackage ../tools/networking/tgt { };
 
   # -- Linux kernel expressions ------------------------------------------------
@@ -10625,7 +10637,7 @@ in
       ];
   };
 
-  grsecurity_base_linux_4_1 = callPackage ../os-specific/linux/kernel/linux-grsecurity-4.1.nix {
+  grsecurity_base_linux_4_4 = callPackage ../os-specific/linux/kernel/linux-grsecurity-4.4.nix {
     kernelPatches = [ kernelPatches.bridge_stp_helper ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -10634,7 +10646,7 @@ in
       ];
   };
 
-  grsecurity_base_linux_4_4 = callPackage ../os-specific/linux/kernel/linux-grsecurity-4.4.nix {
+  grsecurity_base_linux_4_5 = callPackage ../os-specific/linux/kernel/linux-grsecurity-4.5.nix {
     kernelPatches = [ kernelPatches.bridge_stp_helper ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -10659,13 +10671,13 @@ in
   linux_grsec_server_3_14     = self.grKernel kernelPatches.grsecurity_3_14 self.grFlavors.server;
   linux_grsec_server_xen_3_14 = self.grKernel kernelPatches.grsecurity_3_14 self.grFlavors.server_xen;
 
-  linux_grsec_desktop_4_1    = self.grKernel kernelPatches.grsecurity_4_1 self.grFlavors.desktop;
-  linux_grsec_server_4_1     = self.grKernel kernelPatches.grsecurity_4_1 self.grFlavors.server;
-  linux_grsec_server_xen_4_1 = self.grKernel kernelPatches.grsecurity_4_1 self.grFlavors.server_xen;
-
   linux_grsec_desktop_4_4    = self.grKernel kernelPatches.grsecurity_4_4 self.grFlavors.desktop;
   linux_grsec_server_4_4     = self.grKernel kernelPatches.grsecurity_4_4 self.grFlavors.server;
   linux_grsec_server_xen_4_4 = self.grKernel kernelPatches.grsecurity_4_4 self.grFlavors.server_xen;
+
+  linux_grsec_desktop_4_5    = self.grKernel kernelPatches.grsecurity_4_5 self.grFlavors.desktop;
+  linux_grsec_server_4_5     = self.grKernel kernelPatches.grsecurity_4_5 self.grFlavors.server;
+  linux_grsec_server_xen_4_5 = self.grKernel kernelPatches.grsecurity_4_5 self.grFlavors.server_xen;
 
   linux_grsec_desktop_latest    = self.grKernel kernelPatches.grsecurity_latest self.grFlavors.desktop;
   linux_grsec_server_latest     = self.grKernel kernelPatches.grsecurity_latest self.grFlavors.server;
@@ -10830,13 +10842,13 @@ in
   linuxPackages_grsec_server_3_14     = self.grPackage kernelPatches.grsecurity_3_14 self.grFlavors.server;
   linuxPackages_grsec_server_xen_3_14 = self.grPackage kernelPatches.grsecurity_3_14 self.grFlavors.server_xen;
 
-  linuxPackages_grsec_desktop_4_1    = self.grPackage kernelPatches.grsecurity_4_1 self.grFlavors.desktop;
-  linuxPackages_grsec_server_4_1     = self.grPackage kernelPatches.grsecurity_4_1 self.grFlavors.server;
-  linuxPackages_grsec_server_xen_4_1 = self.grPackage kernelPatches.grsecurity_4_1 self.grFlavors.server_xen;
-
   linuxPackages_grsec_desktop_4_4    = self.grPackage kernelPatches.grsecurity_4_4 self.grFlavors.desktop;
   linuxPackages_grsec_server_4_4     = self.grPackage kernelPatches.grsecurity_4_4 self.grFlavors.server;
   linuxPackages_grsec_server_xen_4_4 = self.grPackage kernelPatches.grsecurity_4_4 self.grFlavors.server_xen;
+
+  linuxPackages_grsec_desktop_4_5    = self.grPackage kernelPatches.grsecurity_4_5 self.grFlavors.desktop;
+  linuxPackages_grsec_server_4_5     = self.grPackage kernelPatches.grsecurity_4_5 self.grFlavors.server;
+  linuxPackages_grsec_server_xen_4_5 = self.grPackage kernelPatches.grsecurity_4_5 self.grFlavors.server_xen;
 
   linuxPackages_grsec_desktop_latest    = self.grPackage kernelPatches.grsecurity_latest self.grFlavors.desktop;
   linuxPackages_grsec_server_latest     = self.grPackage kernelPatches.grsecurity_latest self.grFlavors.server;
@@ -13648,7 +13660,7 @@ in
 
   pythonmagick = callPackage ../applications/graphics/PythonMagick { };
 
-  qbittorrent = callPackage ../applications/networking/p2p/qbittorrent {
+  qbittorrent = qt5.callPackage ../applications/networking/p2p/qbittorrent {
     boost = boost;
     libtorrentRasterbar = libtorrentRasterbar;
   };
@@ -13894,8 +13906,6 @@ in
   bittorrentSync14 = callPackage ../applications/networking/bittorrentsync/1.4.x.nix { };
   bittorrentSync20 = callPackage ../applications/networking/bittorrentsync/2.0.x.nix { };
 
-  copy-com = callPackage ../applications/networking/copy-com { };
-
   dropbox = qt55.callPackage ../applications/networking/dropbox { };
 
   dropbox-cli = callPackage ../applications/networking/dropbox-cli { };
@@ -14128,7 +14138,7 @@ in
     enableXMPP      = config.tomahawk.enableXMPP      or true;
     enableKDE       = config.tomahawk.enableKDE       or false;
     enableTelepathy = config.tomahawk.enableTelepathy or false;
-    quazip = qt5.quazip.override { qt = qt4; };
+    quazip = quazip_qt4;
   };
 
   torchPackages = recurseIntoAttrs ( callPackage ../applications/science/machine-learning/torch {
@@ -14651,6 +14661,8 @@ in
 
   inherit (gnome3) yelp;
 
+  inherit (python3Packages) you-get;
+
   inherit (pythonPackages) youtube-dl;
 
   qgis = callPackage ../applications/gis/qgis {};
@@ -14724,6 +14736,8 @@ in
   alienarena = callPackage ../games/alienarena { };
 
   andyetitmoves = if stdenv.isLinux then callPackage ../games/andyetitmoves {} else null;
+
+  angband = callPackage ../games/angband { };
 
   anki = callPackage ../games/anki {
     inherit (pythonPackages) wrapPython pysqlite sqlalchemy pyaudio beautifulsoup httplib2 matplotlib;
@@ -16356,6 +16370,8 @@ in
     inherit (pythonPackages) pexpect paramiko;
   };
 
+  redis-desktop-manager = qt5.callPackage ../applications/misc/redis-desktop-manager { };
+
   robomongo = qt5.callPackage ../applications/misc/robomongo { };
 
   rucksack = callPackage ../development/tools/rucksack { };
@@ -16434,6 +16450,8 @@ in
     gt68xxFirmware = config.sane.gt68xxFirmware or null;
     snapscanFirmware = config.sane.snapscanFirmware or null;
   };
+
+  brscan4 = callPackage ../applications/graphics/sane/backends/brscan4 { };
 
   mkSaneConfig = callPackage ../applications/graphics/sane/config.nix { };
 
