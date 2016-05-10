@@ -6,25 +6,25 @@
 , cairo, gstreamer, gst_plugins_base, icu
 , debugBuild ? false
 , # If you want the resulting program to call itself "Thunderbird"
-  # instead of "Shredder", enable this option.  However, those
+  # instead of "Earlybird", enable this option.  However, those
   # binaries may not be distributed without permission from the
   # Mozilla Foundation, see
   # http://www.mozilla.org/foundation/trademarks/.
   enableOfficialBranding ? false
 }:
 
-let version = "38.7.1"; in
+let version = "45.0"; in
 let verName = "${version}"; in
 
 stdenv.mkDerivation rec {
   name = "thunderbird-${verName}";
 
   src = fetchurl {
-    url = "http://archive.mozilla.org/pub/thunderbird/releases/${verName}/source/thunderbird-${verName}.source.tar.bz2";
-    sha256 = "0a4kbmas0a6wavp8dxkva0fl1y1qrx6b7l3xdjdan7qx7ysmm626";
+    url = "mirror://mozilla/thunderbird/releases/${verName}/source/thunderbird-${verName}.source.tar.xz";
+    sha256 = "1wbkj8a0p62mcbxlq8yyzrx51xi65qm8f2ccqiv5pb6qd51b5d0v";
   };
 
-  buildInputs = # from firefox30Pkgs.xulrunner, but without gstreamer and libvpx
+  buildInputs = # from firefox30Pkgs.xulrunner, without gstreamer and libvpx
     [ pkgconfig which libpng gtk perl zip libIDL libjpeg zlib bzip2
       python dbus dbus_glib pango freetype fontconfig xorg.libXi
       xorg.libX11 xorg.libXrender xorg.libXft xorg.libXt file
@@ -51,6 +51,7 @@ stdenv.mkDerivation rec {
       "--enable-system-pixman"
       "--enable-system-sqlite"
       "--enable-system-cairo"
+      "--disable-gconf"
       "--disable-gstreamer"
       "--enable-startup-notification"
       # "--enable-content-sandbox"            # available since 26.0, but not much info available

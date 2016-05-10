@@ -23,9 +23,7 @@ let
     { name = "grsecurity-${grversion}-${kversion}";
       inherit grversion kernel patches kversion revision;
       patch = fetchurl {
-        url = if branch == "stable"
-              then "https://github.com/kdave/grsecurity-patches/blob/master/grsecurity_patches/grsecurity-${grversion}-${kversion}-${revision}.patch?raw=true"
-              else "https://github.com/slashbeast/grsecurity-scrape/blob/master/${branch}/grsecurity-${grversion}-${kversion}-${revision}.patch?raw=true";
+        url = "https://grsecurity.net/${branch}/grsecurity-${grversion}-${kversion}-${revision}.patch";
         inherit sha256;
       };
       features.grsecurity = true;
@@ -107,9 +105,9 @@ rec {
   grsecurity_4_5 = grsecPatch
     { kernel    = pkgs.grsecurity_base_linux_4_5;
       patches   = [ grsecurity_fix_path_4_5 ];
-      kversion  = "4.5.2";
-      revision  = "201604290633";
-      sha256    = "0qrs4fk6lyqngq3fnsmrv0y3yp1lrbiwadfc6v7hy4lyv77wz107";
+      kversion  = "4.5.3";
+      revision  = "201605080858";
+      sha256    = "0m6x45n9ayn4022r64dx7lxfxg3s632hlrr0260ac9gc0abyk06j";
     };
 
   grsecurity_latest = grsecurity_4_5;
