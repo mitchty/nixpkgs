@@ -259,11 +259,18 @@ let
 
       perlPackages = { };
 
-      pythonPackages = { };
+      pythonPackages = {
+        pandas = unix;
+        scikitlearn = unix;
+      };
       python2Packages = { };
       python27Packages = { };
       python3Packages = { };
-      python35Packages = { };
+      python35Packages = {
+        blaze = unix;
+        pandas = unix;
+        scikitlearn = unix;
+      };
 
       xorg = {
         fontadobe100dpi = linux ++ darwin;
