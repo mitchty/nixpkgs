@@ -10,6 +10,8 @@ stdenv.mkDerivation rec {
     sha256 = "097pv94495njppl9iy2yk47z5wdwvf7swsl88nmwrac51jibbg4i";
   };
 
+  patches = [ ./ffcall.patch ];
+
   configurePhase = ''
     for i in ./configure */configure; do
       cwd="$PWD"

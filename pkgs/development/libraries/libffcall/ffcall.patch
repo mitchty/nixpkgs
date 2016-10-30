@@ -1,0 +1,84 @@
+Index: avcall/avcall-x86_64.s
+===================================================================
+RCS file: /sources/libffcall/ffcall/avcall/avcall-x86_64.s,v
+retrieving revision 1.1
+diff -u -r1.1 avcall-x86_64.s
+--- avcall/avcall-x86_64.s	25 Jan 2004 15:25:43 -0000	1.1
++++ avcall/avcall-x86_64.s	28 Oct 2016 22:04:35 -0000
+@@ -1,9 +1,8 @@
+ 	.file	"avcall-x86_64.c"
+ 	.text
+ 	.p2align 4,,15
+-.globl __builtin_avcall
+-	.type	__builtin_avcall,@function
+-__builtin_avcall:
++.globl ___builtin_avcall
++___builtin_avcall:
+ .LFB1:
+ 	pushq	%r12
+ .LCFI0:
+@@ -328,8 +327,6 @@
+ 	jmp	.L24
+ .LFE1:
+ .Lfe1:
+-	.size	__builtin_avcall,.Lfe1-__builtin_avcall
+-	.section	.eh_frame,"aw",@progbits
+ .Lframe1:
+ 	.long	.LECIE1-.LSCIE1
+ .LSCIE1:
+Index: callback/vacall_r/vacall-x86_64.s
+===================================================================
+RCS file: /sources/libffcall/ffcall/callback/vacall_r/vacall-x86_64.s,v
+retrieving revision 1.1
+diff -u -r1.1 vacall-x86_64.s
+--- callback/vacall_r/vacall-x86_64.s	25 Jan 2004 15:25:43 -0000	1.1
++++ callback/vacall_r/vacall-x86_64.s	28 Oct 2016 22:04:35 -0000
+@@ -1,9 +1,8 @@
+ 	.file	"vacall-x86_64.c"
+ 	.text
+ 	.p2align 4,,15
+-.globl __vacall_r
+-	.type	__vacall_r,@function
+-__vacall_r:
++.globl ___vacall_r
++___vacall_r:
+ .LFB1:
+ 	pushq	%r13
+ .LCFI0:
+@@ -209,8 +208,6 @@
+ 	jmp	.L1
+ .LFE1:
+ .Lfe1:
+-	.size	__vacall_r,.Lfe1-__vacall_r
+-	.section	.eh_frame,"aw",@progbits
+ .Lframe1:
+ 	.long	.LECIE1-.LSCIE1
+ .LSCIE1:
+Index: vacall/vacall-x86_64.s
+===================================================================
+RCS file: /sources/libffcall/ffcall/vacall/vacall-x86_64.s,v
+retrieving revision 1.2
+diff -u -r1.2 vacall-x86_64.s
+--- vacall/vacall-x86_64.s	2 Jun 2004 19:22:10 -0000	1.2
++++ vacall/vacall-x86_64.s	28 Oct 2016 22:04:35 -0000
+@@ -1,9 +1,8 @@
+ 	.file	"vacall-x86_64.c"
+ 	.text
+ 	.p2align 4,,15
+-.globl __vacall
+-	.type	__vacall,@function
+-__vacall:
++.globl ___vacall
++___vacall:
+ .LFB1:
+ 	pushq	%r12
+ .LCFI0:
+@@ -205,8 +204,6 @@
+ 	jmp	.L1
+ .LFE1:
+ .Lfe1:
+-	.size	__vacall,.Lfe1-__vacall
+-	.section	.eh_frame,"aw",@progbits
+ .Lframe1:
+ 	.long	.LECIE1-.LSCIE1
+ .LSCIE1:
