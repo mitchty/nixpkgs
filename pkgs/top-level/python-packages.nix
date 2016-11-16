@@ -12731,12 +12731,12 @@ in {
   };
 
   ipykernel = buildPythonPackage rec {
-    version = "4.5.0";
+    version = "4.5.1";
     name = "ipykernel-${version}";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/i/ipykernel/${name}.tar.gz";
-      sha256 = "245a798edb8fd751b95750d8645d736dd739a020e7fc7d5627dac4d1c35d8295";
+      sha256 = "520c855c6652651c6796a3dd8bc89d533023ac65c5ccf812908187d6f0e461da";
     };
 
     buildInputs = with self; [ nose ] ++ optionals isPy27 [mock];
@@ -15197,14 +15197,19 @@ in {
 
   slixmpp = buildPythonPackage rec {
     name = "slixmpp-${version}";
-    version = "1.1";
+    version = "1.2.1";
 
     disabled = pythonOlder "3.4";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/s/slixmpp/${name}.tar.gz";
-      sha256 = "030ca7e71cbb7e17fb48f83db97779fdbac0b4424cef01245f3276a110b30a6c";
+      sha256 = "0fwngxf2pnmpk8vhv4pfxvl1ya3nxr4kc2z6jrh2imynbry3xfj9";
     };
+
+    patchPhase = ''
+      substituteInPlace slixmpp/thirdparty/gnupg.py \
+        --replace "gpgbinary='gpg'" "gpgbinary='${pkgs.gnupg1}/bin/gpg'"
+    '';
 
     propagatedBuildInputs = with self ; [ aiodns pyasn1 pkgs.gnupg1 pyasn1-modules];
 
@@ -24935,12 +24940,12 @@ in {
   };
 
   traitlets = buildPythonPackage rec {
-    version = "4.2.2";
+    version = "4.3.1";
     name = "traitlets-${version}";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/t/traitlets/${name}.tar.gz";
-      sha256 = "7d7e3070484b2fe490fa55e0acf7023afc5ed9ddabec57405f25c355158e152a";
+      sha256 = "ba8c94323ccbe8fd792e45d8efe8c95d3e0744cc8c085295b607552ab573724c";
     };
 
     buildInputs = with self; [ nose mock ];
@@ -25051,16 +25056,12 @@ in {
 
   qrcode = buildPythonPackage rec {
     name = "qrcode-${version}";
-    version = "5.1";
+    version = "5.3";
 
     src = pkgs.fetchurl {
       url = "mirror://pypi/q/qrcode/${name}.tar.gz";
-      sha256 = "0skzrvhjnnacrz52jml4i050vdx5lfcd3np172srxjaghdgfxg9k";
+      sha256 = "0kljfrfq0c2rmxf8am57333ia41kd0snbm2rnqbdy816hgpcq5a1";
     };
-
-    # Errors in several tests:
-    # TypeError: must be str, not bytes
-    disabled = isPy3k;
 
     propagatedBuildInputs = with self; [ six pillow ];
 
@@ -29366,28 +29367,28 @@ in {
     };
   };
 
-  poezio = buildPythonPackage rec {
+  poezio = buildPythonApplication rec {
     name = "poezio-${version}";
-    version = "0.9";
+    version = "0.10";
 
-    namePrefix = "";
     disabled = pythonOlder "3.4";
 
     buildInputs = with self; [ pytest ];
-    propagatedBuildInputs = with self ; [ aiodns slixmpp pyinotify potr ];
-
-    checkPhase = ''
-      PYTHONPATH="$PYTHONPATH:$out/${python.sitePackages}/poezio" make test
-    '';
-
-    patches =
-      let patch_base = ../development/python-modules/poezio;
-      in [ "${patch_base}/make_default_config_writable.patch" ];
+    propagatedBuildInputs = with self ; [ aiodns slixmpp pyinotify potr mpd2 ];
 
     src = pkgs.fetchurl {
-      url = "http://dev.louiz.org/attachments/download/91/${name}.tar.xz";
-      sha256 = "1vc7zn4rp0ds0cdh1xcmbwx6w2qh4pnpzi5mdnj3rpl7xdr6jqzi";
+      url = "http://dev.louiz.org/attachments/download/102/${name}.tar.gz";
+      sha256 = "1mm0c3250p0kh7lmmjlp05hbc7byn9lknafgb906xmp4vx1p4kjn";
     };
+
+    patches = [
+      ../development/python-modules/poezio/fix_gnupg_import.patch
+      ../development/python-modules/poezio/fix_plugins_imports.patch
+    ];
+
+    checkPhase = ''
+      py.test
+    '';
 
     meta = {
       description = "Free console XMPP client";
