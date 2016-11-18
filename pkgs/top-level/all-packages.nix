@@ -5867,6 +5867,8 @@ in
   bison3 = callPackage ../development/tools/parsing/bison/3.x.nix { };
   bison = bison3;
 
+  bloaty = callPackage ../development/tools/bloaty { };
+
   bossa = callPackage ../development/tools/misc/bossa {
     wxGTK = wxGTK30;
   };
@@ -17008,6 +17010,8 @@ in
   faust2jack = callPackage ../applications/audio/faust/faust2jack.nix { };
 
   faust2jaqt = callPackage ../applications/audio/faust/faust2jaqt.nix { };
+
+  faust2ladspa = callPackage ../applications/audio/faust/faust2ladspa.nix { };
 
   faust2lv2 = callPackage ../applications/audio/faust/faust2lv2.nix { };
 
