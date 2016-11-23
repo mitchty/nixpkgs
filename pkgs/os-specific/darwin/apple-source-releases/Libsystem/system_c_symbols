@@ -738,7 +738,6 @@ _lstatx64_np
 _lstatx_np
 _lstatx_np$INODE64
 _lutimes
-_mach_init_routine
 _mblen
 _mblen_l
 _mbmb
