@@ -41,6 +41,30 @@ in {
 
   setuptools = callPackage ../development/python-modules/setuptools { };
 
+  acoustics = buildPythonPackage rec {
+    pname = "acoustics";
+    version = "0.1.2";
+    name = pname + "-" + version;
+
+    buildInputs = with self; [ cython pytest ];
+    propagatedBuildInputs = with self; [ numpy scipy matplotlib pandas tabulate ];
+
+    src = pkgs.fetchurl {
+      url = "mirror://pypi/${builtins.substring 0 1 pname}/${pname}/${name}.tar.gz";
+      sha256 = "b75a47de700d01e704de95953a6e969922b2f510d7eefe59f7f8980ad44ad1b7";
+    };
+
+    # Tests not distributed
+    doCheck = false;
+
+    meta = {
+      description = "A package for acousticians";
+      maintainer = with maintainers; [ fridh ];
+      license = with licenses; [ bsd ];
+      homepage = https://github.com/python-acoustics/python-acoustics;
+    };
+  };
+
   agate = buildPythonPackage rec {
     name = "agate-1.2.2";
     disabled = isPy3k;
@@ -16039,17 +16063,17 @@ in {
   };
 
   oauthlib = buildPythonPackage rec {
-    version = "0.7.2";
+    version = "2.0.0";
     name = "oauthlib-${version}";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/idan/oauthlib/archive/${version}.tar.gz";
-      sha256 = "08b7swyswhxh90k9mp54rk1qks2l2s2pdcjap6x118y27p7dhp4h";
+      url = "https://github.com/idan/oauthlib/archive/v${version}.tar.gz";
+      sha256 = "02b645a8rqh4xfs1cmj8sss8wqppiadd1ndq3av1cdjz2frfqcjf";
     };
 
     buildInputs = with self; [ mock nose unittest2 ];
 
-    propagatedBuildInputs = with self; [ pycrypto blinker pyjwt ];
+    propagatedBuildInputs = with self; [ cryptography blinker pyjwt ];
 
     meta = {
       homepage = https://github.com/idan/oauthlib;
@@ -20249,14 +20273,15 @@ in {
   };
 
   pyjwt = buildPythonPackage rec {
-    version = "1.4.0";
+    version = "1.4.2";
     name = "pyjwt-${version}";
 
     src = pkgs.fetchurl {
       url = "http://github.com/progrium/pyjwt/archive/${version}.tar.gz";
-      sha256 = "118rzhpyvx1h4hslms4fdizyv6mnyd4g34fv089lvs116pj08k9c";
+      sha256 = "06vg84aicwkv0kli8i4jhg0kc6298cmh38ib058q01yxzk6q17gn";
     };
 
+    buildInputs = with self; [ pytestrunner pytestcov pytest_27 coverage ];
     propagatedBuildInputs = with self; [ pycrypto ecdsa ];
 
     meta = {
@@ -20511,7 +20536,8 @@ in {
       sha256 = "0jgyhkkq36wn36rymn4jiyqh2vdslmradq4a2mjkxfbk2cz6wpi5";
     };
 
-    buildInputs = with self; [ six pytest hypothesis ];
+    propagatedBuildInputs = with self; [ six ];
+    buildInputs = with self; [ pytest hypothesis ];
 
     checkPhase = ''
       py.test
