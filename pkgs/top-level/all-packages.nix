@@ -1430,7 +1430,6 @@ in
   diffoscope = callPackage ../tools/misc/diffoscope {
     jdk = jdk7;
     pythonPackages = python3Packages;
-    rpm = rpm.override { python = python3; };
   };
 
   diffstat = callPackage ../tools/text/diffstat { };
@@ -6505,6 +6504,8 @@ in
   swftools = callPackage ../tools/video/swftools { };
 
   tcptrack = callPackage ../development/tools/misc/tcptrack { };
+
+  teensyduino = arduino-core.override { withGui = true; withTeensyduino = true; };
 
   teensy-loader-cli = callPackage ../development/tools/misc/teensy-loader-cli { };
 
@@ -13578,8 +13579,6 @@ in
     stdenv = overrideCC stdenv gcc49;
   };
 
-  koji = callPackage ../tools/package-management/koji { };
-
   konversation = qt5.callPackage ../applications/networking/irc/konversation/1.6.nix { };
 
   krita = qt5.callPackage ../applications/graphics/krita {
@@ -14508,6 +14507,7 @@ in
       urxvt_tabbedex
       urxvt_font_size
       urxvt_theme_switch
+      urxvt_vtwheel
     ];
   };
 
@@ -14517,6 +14517,7 @@ in
   urxvt_tabbedex = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-tabbedex { };
   urxvt_font_size = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-font-size { };
   urxvt_theme_switch = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-theme-switch { };
+  urxvt_vtwheel = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-vtwheel.nix { };
 
   uade123 = callPackage ../applications/audio/uade123 {};
 
