@@ -1550,7 +1550,6 @@ in
 
   emscriptenStdenv = stdenv // { mkDerivation = buildEmscriptenPackage; };
 
-
   efibootmgr = callPackage ../tools/system/efibootmgr { };
 
   efivar = callPackage ../tools/system/efivar { };
@@ -1993,6 +1992,12 @@ in
     netpbm = null;
   };
 
+  gromit-mpx = callPackage ../tools/graphics/gromit-mpx {
+    gtk = gtk3;
+    libappindicator = libappindicator-gtk3;
+    inherit (xorg) libXdmcp;
+  };
+
   groonga = callPackage ../servers/search/groonga { };
 
   grub = callPackage_i686 ../tools/misc/grub {
@@ -2095,6 +2100,7 @@ in
   hardlink = callPackage ../tools/system/hardlink { };
 
   hashcat = callPackage ../tools/security/hashcat { };
+  hashcat3 = callPackage ../tools/security/hashcat/hashcat3 { };
 
   hash-slinger = callPackage ../tools/security/hash-slinger { };
 
@@ -5305,9 +5311,7 @@ in
     lua = lua5_1;
   };
 
-  teyjus = callPackage ../development/compilers/teyjus {
-    omake = omake_rc1;
-  };
+  teyjus = callPackage ../development/compilers/teyjus { };
 
   thrust = callPackage ../development/tools/thrust {
     gconf = pkgs.gnome2.GConf;
@@ -6347,7 +6351,9 @@ in
   noweb = callPackage ../development/tools/literate-programming/noweb { };
   nuweb = callPackage ../development/tools/literate-programming/nuweb { tex = texlive.combined.scheme-small; };
 
-  inherit (ocamlPackages) omake omake_rc1;
+  omake = callPackage ../development/tools/ocaml/omake {
+    inherit (ocamlPackages_4_02) ocaml;
+  };
 
   omniorb = callPackage ../development/tools/omniorb { };
 
@@ -10923,6 +10929,7 @@ in
   linux_mptcp = callPackage ../os-specific/linux/kernel/linux-mptcp.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
+        kernelPatches.packet_fix_race_condition_CVE_2016_8655
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -10932,11 +10939,18 @@ in
   };
 
   linux_rpi = callPackage ../os-specific/linux/kernel/linux-rpi.nix {
-    kernelPatches = [ kernelPatches.bridge_stp_helper ];
+    kernelPatches = with kernelPatches; [
+      bridge_stp_helper
+      packet_fix_race_condition_CVE_2016_8655
+    ];
   };
 
   linux_3_10 = callPackage ../os-specific/linux/kernel/linux-3.10.nix {
-    kernelPatches = with kernelPatches; [ bridge_stp_helper lguest_entry-linkage ]
+    kernelPatches = with kernelPatches;
+      [ bridge_stp_helper
+        lguest_entry-linkage
+        packet_fix_race_condition_CVE_2016_8655
+      ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
@@ -10945,7 +10959,11 @@ in
   };
 
   linux_3_12 = callPackage ../os-specific/linux/kernel/linux-3.12.nix {
-    kernelPatches = with kernelPatches; [ bridge_stp_helper crc_regression ]
+    kernelPatches = with kernelPatches;
+      [ bridge_stp_helper
+        crc_regression
+        packet_fix_race_condition_CVE_2016_8655
+      ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
@@ -10954,7 +10972,10 @@ in
   };
 
   linux_3_18 = callPackage ../os-specific/linux/kernel/linux-3.18.nix {
-    kernelPatches = [ kernelPatches.bridge_stp_helper ]
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        kernelPatches.packet_fix_race_condition_CVE_2016_8655
+      ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
         kernelPatches.mips_fpu_sigill
@@ -10965,6 +10986,7 @@ in
   linux_4_1 = callPackage ../os-specific/linux/kernel/linux-4.1.nix {
     kernelPatches =
       [ kernelPatches.bridge_stp_helper
+        kernelPatches.packet_fix_race_condition_CVE_2016_8655
       ]
       ++ lib.optionals ((platform.kernelArch or null) == "mips")
       [ kernelPatches.mips_fpureg_emu
@@ -10991,6 +11013,22 @@ in
         # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
         # when adding a new linux version
         # !!! 4.7 patch doesn't apply, 4.8 patch not up yet, will keep checking
+        # kernelPatches.cpu-cgroup-v2."4.7"
+        kernelPatches.modinst_arg_list_too_long
+      ]
+      ++ lib.optionals ((platform.kernelArch or null) == "mips")
+      [ kernelPatches.mips_fpureg_emu
+        kernelPatches.mips_fpu_sigill
+        kernelPatches.mips_ext3_n32
+      ];
+  };
+
+  linux_4_9 = callPackage ../os-specific/linux/kernel/linux-4.9.nix {
+    kernelPatches =
+      [ kernelPatches.bridge_stp_helper
+        # See pkgs/os-specific/linux/kernel/cpu-cgroup-v2-patches/README.md
+        # when adding a new linux version
+        # !!! 4.7 patch doesn't apply, 4.9 patch not up yet, will keep checking
         # kernelPatches.cpu-cgroup-v2."4.7"
         kernelPatches.modinst_arg_list_too_long
       ]
@@ -11162,7 +11200,7 @@ in
   linux = linuxPackages.kernel;
 
   # Update this when adding the newest kernel major version!
-  linuxPackages_latest = linuxPackages_4_8;
+  linuxPackages_latest = linuxPackages_4_9;
   linux_latest = linuxPackages_latest.kernel;
 
   # Build the kernel modules for the some of the kernels.
@@ -11174,6 +11212,7 @@ in
   linuxPackages_4_1 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_1);
   linuxPackages_4_4 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_4);
   linuxPackages_4_8 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_8);
+  linuxPackages_4_9 = recurseIntoAttrs (linuxPackagesFor pkgs.linux_4_9);
   # Don't forget to update linuxPackages_latest!
 
   # Intentionally lacks recurseIntoAttrs, as -rc kernels will quite likely break out-of-tree modules and cause failed Hydra builds.
@@ -11910,6 +11949,8 @@ in
   numix-icon-theme = callPackage ../data/icons/numix-icon-theme { };
 
   numix-icon-theme-circle = callPackage ../data/icons/numix-icon-theme-circle { };
+
+  numix-icon-theme-square = callPackage ../data/icons/numix-icon-theme-square { };
 
   oldstandard = callPackage ../data/fonts/oldstandard { };
 
@@ -12945,6 +12986,8 @@ in
 
   google-musicmanager = callPackage ../applications/audio/google-musicmanager { };
 
+  gopher = callPackage ../applications/networking/gopher/gopher { };
+
   gpa = callPackage ../applications/misc/gpa { };
 
   gpicview = callPackage ../applications/graphics/gpicview { };
@@ -13723,6 +13766,8 @@ in
 
   lyx = qt5.callPackage ../applications/misc/lyx { };
 
+  mail-notification = callPackage ../desktops/gnome-2/desktop/mail-notification {};
+
   magnetophonDSP = {
     CharacterCompressor = callPackage ../applications/audio/magnetophonDSP/CharacterCompressor { };
     CompBus = callPackage ../applications/audio/magnetophonDSP/CompBus { };
@@ -13788,6 +13833,8 @@ in
   minimodem = callPackage ../applications/audio/minimodem { };
 
   minidjvu = callPackage ../applications/graphics/minidjvu { };
+
+  minikube = callPackage ../applications/networking/cluster/minikube { };
 
   minitube = callPackage ../applications/video/minitube { };
 
@@ -15636,6 +15683,8 @@ in
 
   egoboo = callPackage ../games/egoboo { };
 
+  endless-sky = callPackage ../games/endless-sky { };
+
   eternity = callPackage ../games/eternity-engine { };
 
   extremetuxracer = callPackage ../games/extremetuxracer {
@@ -16418,6 +16467,10 @@ in
 
   theme-vertex = callPackage ../misc/themes/vertex { };
 
+  rox-filer = callPackage ../desktops/rox/rox-filer {
+    gtk = gtk2;
+  };
+
   xfce = xfce4-12;
   xfce4-12 = recurseIntoAttrs (callPackage ../desktops/xfce { });
 
@@ -16744,6 +16797,8 @@ in
   };
 
   lean = callPackage ../applications/science/logic/lean {};
+  lean2 = callPackage ../applications/science/logic/lean2 {};
+  lean3 = lean;
 
   leo2 = callPackage ../applications/science/logic/leo2 {};
 

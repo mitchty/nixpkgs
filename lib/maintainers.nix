@@ -141,6 +141,7 @@
   ehmry = "Emery Hemingway <emery@vfemail.net>";
   eikek = "Eike Kettner <eike.kettner@posteo.de>";
   elasticdog = "Aaron Bull Schaefer <aaron@elasticdog.com>";
+  eleanor = "Dejan Lukan <dejan@proteansec.com>";
   elitak = "Eric Litak <elitak@gmail.com>";
   ellis = "Ellis Whitehead <nixos@ellisw.net>";
   epitrochoid = "Mabry Cervin <mpcervin@uncg.edu>";
@@ -241,6 +242,7 @@
   leonardoce = "Leonardo Cecchi <leonardo.cecchi@gmail.com>";
   lethalman = "Luca Bruno <lucabru@src.gnome.org>";
   lewo = "Antoine Eiche <lewo@abesis.fr>";
+  lheckemann = "Linus Heckemann <git@sphalerite.org>";
   lhvwb = "Nathaniel Baxter <nathaniel.baxter@gmail.com>";
   lihop = "Leroy Hopson <nixos@leroy.geek.nz>";
   linquize = "Linquize <linquize@yahoo.com.hk>";
