@@ -551,9 +551,9 @@ in
 
   inherit (androidenv) androidsdk_4_4 androidndk;
 
-  androidsdk = androidenv.androidsdk_6_0;
+  androidsdk = androidenv.androidsdk_7_0;
 
-  androidsdk_extras = self.androidenv.androidsdk_6_0_extras;
+  androidsdk_extras = self.androidenv.androidsdk_7_0_extras;
 
   arc-theme = callPackage ../misc/themes/arc { };
 
@@ -1834,6 +1834,8 @@ in
 
   gengetopt = callPackage ../development/tools/misc/gengetopt { };
 
+  genimage = callPackage ../tools/filesystems/genimage { };
+
   geteltorito = callPackage ../tools/misc/geteltorito { };
 
   getmail = callPackage ../tools/networking/getmail { };
@@ -2041,6 +2043,7 @@ in
 
   gtest = callPackage ../development/libraries/gtest {};
   gmock = callPackage ../development/libraries/gmock {};
+  gbenchmark = callPackage ../development/libraries/gbenchmark {};
 
   gtkdatabox = callPackage ../development/libraries/gtkdatabox {};
 
@@ -2237,6 +2240,8 @@ in
 
   inetutils = callPackage ../tools/networking/inetutils { };
 
+  inform7 = callPackage ../development/compilers/inform7 { };
+
   innoextract = callPackage ../tools/archivers/innoextract { };
 
   ioping = callPackage ../tools/system/ioping { };
@@ -2271,11 +2276,12 @@ in
 
   ised = callPackage ../tools/misc/ised {};
 
-  isl = isl_0_15;
+  isl = isl_0_17;
   isl_0_11 = callPackage ../development/libraries/isl/0.11.1.nix { };
   isl_0_12 = callPackage ../development/libraries/isl/0.12.2.nix { };
   isl_0_14 = callPackage ../development/libraries/isl/0.14.1.nix { };
   isl_0_15 = callPackage ../development/libraries/isl/0.15.0.nix { };
+  isl_0_17 = callPackage ../development/libraries/isl/0.17.1.nix { };
 
   ispike = callPackage ../development/libraries/science/robotics/ispike { };
 
@@ -2293,6 +2299,8 @@ in
   jfsutils = callPackage ../tools/filesystems/jfsutils { };
 
   jhead = callPackage ../tools/graphics/jhead { };
+
+  jid = callPackage ../development/tools/jid { };
 
   jing = self.jing-trang;
   jing-trang = callPackage ../tools/text/xml/jing-trang { };
@@ -3696,6 +3704,8 @@ in
 
   sipsak = callPackage ../tools/networking/sipsak { };
 
+  sisco.lv2 = callPackage ../applications/audio/sisco.lv2 { };
+
   skippy-xd = callPackage ../tools/X11/skippy-xd {};
 
   sks = callPackage ../servers/sks { };
@@ -4526,6 +4536,8 @@ in
 
 
   ### DEVELOPMENT / COMPILERS
+
+  abcl = callPackage ../development/compilers/abcl {};
 
   aldor = callPackage ../development/compilers/aldor { };
 
@@ -5616,9 +5628,14 @@ in
     php = php70;
   });
 
+  php71Packages = recurseIntoAttrs (callPackage ./php-packages.nix {
+    php = php71;
+  });
+
   inherit (callPackages ../development/interpreters/php { })
     php56
-    php70;
+    php70
+    php71;
 
   picoc = callPackage ../development/interpreters/picoc {};
 
@@ -5953,6 +5970,7 @@ in
   };
   buildbot-full = self.buildbot.override {
     plugins = with self.buildbot-plugins; [ www console-view waterfall-view ];
+    enableLocalWorker = true;
   };
 
   buildkite-agent = callPackage ../development/tools/continuous-integration/buildkite-agent { };
@@ -6423,10 +6441,11 @@ in
     luaBindings = config.radare.luaBindings or false;
   };
 
+  ragel = ragelStable;
 
-  ragel = callPackage ../development/tools/parsing/ragel {
-    tex = texlive.combined.scheme-small;
-  };
+  inherit (callPackages ../development/tools/parsing/ragel {
+      tex = texlive.combined.scheme-small;
+    }) ragelStable ragelDev;
 
   hammer = callPackage ../development/tools/parsing/hammer { };
 
@@ -6946,6 +6965,8 @@ in
   };
 
   fcgi = callPackage ../development/libraries/fcgi { };
+
+  ffcast = callPackage ../tools/X11/ffcast { };
 
   fflas-ffpack = callPackage ../development/libraries/fflas-ffpack {};
   fflas-ffpack_1 = callPackage ../development/libraries/fflas-ffpack/1.nix {};
@@ -10119,6 +10140,8 @@ in
 
   jetty = callPackage ../servers/http/jetty { };
 
+  knot-dns = callPackage ../servers/dns/knot-dns { };
+
   rdkafka = callPackage ../development/libraries/rdkafka { };
 
   leafnode = callPackage ../servers/news/leafnode { };
@@ -11450,6 +11473,7 @@ in
   watch = callPackage ../os-specific/linux/procps/watch.nix { };
 
   qemu_kvm = lowPrio (qemu.override { x86Only = true; });
+  qemu_test = lowPrio (qemu.override { x86Only = true; nixosTestRunner = true; });
 
   firmwareLinuxNonfree = callPackage ../os-specific/linux/firmware/firmware-linux-nonfree { };
 
@@ -12073,6 +12097,8 @@ in
 
   unifont_upper = callPackage ../data/fonts/unifont_upper { };
 
+  unscii = callPackage ../data/fonts/unscii { };
+
   vanilla-dmz = callPackage ../data/icons/vanilla-dmz { };
 
   vistafonts = callPackage ../data/fonts/vista-fonts { };
@@ -12184,7 +12210,9 @@ in
   #     };
   #   };
   # }
-  android-studio = callPackage ../applications/editors/android-studio { };
+  android-studio = callPackage ../applications/editors/android-studio {
+      inherit (xorg) libX11 libXext libXi libXrandr libXrender libXtst;
+  };
 
   antimony = qt5.callPackage ../applications/graphics/antimony {};
 
@@ -13363,6 +13391,8 @@ in
 
   hello = callPackage ../applications/misc/hello { };
 
+  kubernetes-helm = callPackage ../applications/networking/cluster/helm { };
+
   helmholtz = callPackage ../applications/audio/pd-plugins/helmholtz { };
 
   heme = callPackage ../applications/editors/heme { };
@@ -13997,8 +14027,6 @@ in
   mutt-with-sidebar = callPackage ../applications/networking/mailreaders/mutt {
     withSidebar = true;
   };
-
-  mutt-kz = callPackage ../applications/networking/mailreaders/mutt-kz { };
 
   neomutt = callPackage ../applications/networking/mailreaders/neomutt { };
 
@@ -16670,6 +16698,11 @@ in
     camlp5 = ocamlPackages.camlp5_transitional;
   };
 
+  coq_8_6 = callPackage ../applications/science/logic/coq/8.6.nix {
+    inherit (ocamlPackages) ocaml findlib lablgtk;
+    camlp5 = ocamlPackages.camlp5_transitional;
+  };
+
   coq_8_5 = callPackage ../applications/science/logic/coq/8.5.nix {
     inherit (ocamlPackages) ocaml findlib lablgtk;
     camlp5 = ocamlPackages.camlp5_transitional;
@@ -16753,8 +16786,29 @@ in
 
   };
 
+  mkCoqPackages_8_6 = self: let callPackage = newScope self; in rec {
+
+    inherit callPackage;
+
+    coq = coq_8_6;
+
+    coq-ext-lib = callPackage ../development/coq-modules/coq-ext-lib {};
+
+    coquelicot = callPackage ../development/coq-modules/coquelicot {};
+
+    dpdgraph = callPackage ../development/coq-modules/dpdgraph {};
+
+    flocq = callPackage ../development/coq-modules/flocq {};
+
+    interval = callPackage ../development/coq-modules/interval {};
+
+    fiat_HEAD = callPackage ../development/coq-modules/fiat/HEAD.nix {};
+
+  };
+
   coqPackages = mkCoqPackages_8_4 coqPackages;
   coqPackages_8_5 = mkCoqPackages_8_5 coqPackages_8_5;
+  coqPackages_8_6 = mkCoqPackages_8_6 coqPackages_8_6;
 
   cryptoverif = callPackage ../applications/science/logic/cryptoverif { };
 
