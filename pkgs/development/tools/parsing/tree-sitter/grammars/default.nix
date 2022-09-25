@@ -30,9 +30,9 @@
   tree-sitter-glimmer = lib.importJSON ./tree-sitter-glimmer.json;
   tree-sitter-glsl = lib.importJSON ./tree-sitter-glsl.json;
   tree-sitter-go = lib.importJSON ./tree-sitter-go.json;
-  tree-sitter-gowork = lib.importJSON ./tree-sitter-gowork.json;
   tree-sitter-godot-resource = lib.importJSON ./tree-sitter-godot-resource.json;
   tree-sitter-gomod = lib.importJSON ./tree-sitter-gomod.json;
+  tree-sitter-gowork = lib.importJSON ./tree-sitter-gowork.json;
   tree-sitter-graphql = lib.importJSON ./tree-sitter-graphql.json;
   tree-sitter-haskell = lib.importJSON ./tree-sitter-haskell.json;
   tree-sitter-hcl = lib.importJSON ./tree-sitter-hcl.json;
@@ -54,6 +54,7 @@
   tree-sitter-lua = lib.importJSON ./tree-sitter-lua.json;
   tree-sitter-make = lib.importJSON ./tree-sitter-make.json;
   tree-sitter-markdown = lib.importJSON ./tree-sitter-markdown.json;
+  tree-sitter-nickel = lib.importJSON ./tree-sitter-nickel.json;
   tree-sitter-nix = lib.importJSON ./tree-sitter-nix.json;
   tree-sitter-norg = lib.importJSON ./tree-sitter-norg.json;
   tree-sitter-ocaml = lib.importJSON ./tree-sitter-ocaml.json;
@@ -66,6 +67,7 @@
   tree-sitter-pug = lib.importJSON ./tree-sitter-pug.json;
   tree-sitter-python = lib.importJSON ./tree-sitter-python.json;
   tree-sitter-ql = lib.importJSON ./tree-sitter-ql.json;
+  tree-sitter-ql-dbscheme = lib.importJSON ./tree-sitter-ql-dbscheme.json;
   tree-sitter-query = lib.importJSON ./tree-sitter-query.json;
   tree-sitter-r = lib.importJSON ./tree-sitter-r.json;
   tree-sitter-regex = lib.importJSON ./tree-sitter-regex.json;
@@ -76,6 +78,7 @@
   tree-sitter-scala = lib.importJSON ./tree-sitter-scala.json;
   tree-sitter-scheme = lib.importJSON ./tree-sitter-scheme.json;
   tree-sitter-scss = lib.importJSON ./tree-sitter-scss.json;
+  tree-sitter-smithy = lib.importJSON ./tree-sitter-smithy.json;
   tree-sitter-sparql = lib.importJSON ./tree-sitter-sparql.json;
   tree-sitter-sql = lib.importJSON ./tree-sitter-sql.json;
   tree-sitter-supercollider = lib.importJSON ./tree-sitter-supercollider.json;

@@ -4,13 +4,13 @@ rec {
   thunderbird = thunderbird-102;
   thunderbird-91 = (buildMozillaMach rec {
     pname = "thunderbird";
-    version = "91.11.0";
+    version = "91.13.1";
     application = "comm/mail";
     applicationName = "Mozilla Thunderbird";
     binaryName = pname;
     src = fetchurl {
       url = "mirror://mozilla/thunderbird/releases/${version}/source/thunderbird-${version}.source.tar.xz";
-      sha512 = "26b9242259b71eb14ddadffb34a59d07d515bbbc0cb806eed965a73b001ee81b3b1128d06cfdf3e50d5da4ef97be21d11193be34a582d3c9f27f27d2f97d90d2";
+      sha512 = "ca1bf821e6ca010c554fc111157af60e627ace7a0d43785ba39b260cd0606480dd5736c188c49ef6c3f1bda4b4c6870767b75e483241e7fd5a4290d689017e73";
     };
     extraPatches = [
       # The file to be patched is different from firefox's `no-buildconfig-ffx90.patch`.
@@ -29,6 +29,7 @@ rec {
     };
     updateScript = callPackage ./update.nix {
       attrPath = "thunderbird-91-unwrapped";
+      versionPrefix = "91";
     };
   }).override {
     geolocationSupport = false;
@@ -38,13 +39,13 @@ rec {
   };
   thunderbird-102 = (buildMozillaMach rec {
     pname = "thunderbird";
-    version = "102.0.1";
+    version = "102.3.0";
     application = "comm/mail";
     applicationName = "Mozilla Thunderbird";
     binaryName = pname;
     src = fetchurl {
       url = "mirror://mozilla/thunderbird/releases/${version}/source/thunderbird-${version}.source.tar.xz";
-      sha512 = "72e6ac7946d8bdcee1a46a321c1226fb88facc299cf01f63b139e7e84a4692284cb20e615c5f9a6da12c974a17e2deb548dde48a77d56b1850f71bdcedb137d8";
+      sha512 = "9b9908d9f7b1281df5b2c74a25211973e25d9b780f05b9550c89e5aeb8b39070c517a1a33d0d84a33ed26dbcef99058308b76c056bd4e34987c32f0600e3882e";
     };
     extraPatches = [
       # The file to be patched is different from firefox's `no-buildconfig-ffx90.patch`.
@@ -63,6 +64,7 @@ rec {
     };
     updateScript = callPackage ./update.nix {
       attrPath = "thunderbird-unwrapped";
+      versionPrefix = "102";
     };
   }).override {
     geolocationSupport = false;

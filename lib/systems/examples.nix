@@ -22,12 +22,11 @@ rec {
   };
 
   ppc64 = {
-    config = "powerpc64-unknown-linux-gnu";
-    gcc = { abi = "elfv2"; }; # for gcc configuration
+    config = "powerpc64-unknown-linux-gnuabielfv2";
   };
   ppc64-musl = {
     config = "powerpc64-unknown-linux-musl";
-    gcc = { abi = "elfv2"; }; # for gcc configuration
+    gcc = { abi = "elfv2"; };
   };
 
   sheevaplug = {
@@ -57,23 +56,23 @@ rec {
   armv7a-android-prebuilt = {
     config = "armv7a-unknown-linux-androideabi";
     rustc.config = "armv7-linux-androideabi";
-    sdkVer = "29";
-    ndkVer = "21";
+    sdkVer = "28";
+    ndkVer = "24";
     useAndroidPrebuilt = true;
   } // platforms.armv7a-android;
 
   aarch64-android-prebuilt = {
     config = "aarch64-unknown-linux-android";
     rustc.config = "aarch64-linux-android";
-    sdkVer = "29";
-    ndkVer = "21";
+    sdkVer = "28";
+    ndkVer = "24";
     useAndroidPrebuilt = true;
   };
 
   aarch64-android = {
     config = "aarch64-unknown-linux-android";
     sdkVer = "30";
-    ndkVer = "21";
+    ndkVer = "24";
     libc = "bionic";
     useAndroidPrebuilt = false;
     useLLVM = true;

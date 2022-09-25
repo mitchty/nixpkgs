@@ -1,4 +1,4 @@
-{ lib, hwdata, pkg-config, lxc, buildGo118Package, fetchurl
+{ lib, hwdata, pkg-config, lxc, buildGoPackage, fetchurl
 , makeWrapper, acl, rsync, gnutar, xz, btrfs-progs, gzip, dnsmasq, attr
 , squashfsTools, iproute2, iptables, libcap
 , dqlite, raft-canonical, sqlite-replication, udev
@@ -9,9 +9,9 @@
 , nixosTests
 }:
 
-buildGo118Package rec {
+buildGoPackage rec {
   pname = "lxd";
-  version = "5.3";
+  version = "5.6";
 
   goPackagePath = "github.com/lxc/lxd";
 
@@ -20,7 +20,7 @@ buildGo118Package rec {
       "https://linuxcontainers.org/downloads/lxd/lxd-${version}.tar.gz"
       "https://github.com/lxc/lxd/releases/download/lxd-${version}/lxd-${version}.tar.gz"
     ];
-    sha256 = "sha256-DRdKCfp0nL3lg5O/Wm7vX2grO/DBuyhHRi85XI5laZU=";
+    sha256 = "sha256-bLKl9OpvxXozmqjX8hY2xIiVectBiohDxTzd5du5w+4=";
   };
 
   postPatch = ''
@@ -62,7 +62,7 @@ buildGo118Package rec {
     homepage = "https://linuxcontainers.org/lxd/";
     changelog = "https://github.com/lxc/lxd/releases/tag/lxd-${version}";
     license = licenses.asl20;
-    maintainers = with maintainers; [ fpletz marsam ];
+    maintainers = with maintainers; [ marsam ];
     platforms = platforms.linux;
   };
 }

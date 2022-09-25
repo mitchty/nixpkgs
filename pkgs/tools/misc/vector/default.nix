@@ -16,8 +16,9 @@
 , tzdata
 , cmake
 , perl
-  # kafka is optional but one of the most used features
-, enableKafka ? true
+  # nix has a problem with the `?` in the feature list
+  # enabling kafka will produce a vector with no features at all
+, enableKafka ? false
   # TODO investigate adding "api" "api-client" "vrl-cli" and various "vendor-*"
   # "disk-buffer" is using leveldb TODO: investigate how useful
   # it would be, perhaps only for massive scale?
@@ -30,7 +31,7 @@
 
 let
   pname = "vector";
-  version = "0.23.0";
+  version = "0.24.1";
 in
 rustPlatform.buildRustPackage {
   inherit pname version;
@@ -39,10 +40,10 @@ rustPlatform.buildRustPackage {
     owner = "vectordotdev";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-Y1RysuCWvdbqckW54r1uH/K9YTuAZk8T4M3HRGFm0EM=";
+    sha256 = "sha256-RfKg14r3B5Jx2vIa4gpJs5vXRqSXKOXKRFmmQmzQorQ=";
   };
 
-  cargoSha256 = "sha256-VBmJfRCwSv3t5DPzVj92ajGYk5Ju8xqr4v7IDU17498=";
+  cargoSha256 = "sha256-l2rrT2SeeH4bYYlzSiFASNBxtg4TBm1dRA4cFRfvpkk=";
   nativeBuildInputs = [ pkg-config cmake perl ];
   buildInputs = [ oniguruma openssl protobuf rdkafka zstd ]
     ++ lib.optionals stdenv.isDarwin [ Security libiconv coreutils CoreServices ];

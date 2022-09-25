@@ -58,14 +58,14 @@ let
   );
 in
 stdenv.mkDerivation rec {
-  version = "9.6";
+  version = "9.7";
   pname = "sage-src";
 
   src = fetchFromGitHub {
     owner = "sagemath";
     repo = "sage";
     rev = version;
-    sha256 = "sha256-QY8Yga3hD1WhSCtA2/PVry8hHlMmC31J8jCBFtWgIU0=";
+    sha256 = "sha256-MYpCp18wqKwCa+tcJ7He14p1FXDlVm1vubQqQS9g3LY=";
   };
 
   # Patches needed because of particularities of nix or the way this is packaged.
@@ -81,6 +81,10 @@ stdenv.mkDerivation rec {
     # Parallelize docubuild using subprocesses, fixing an isolation issue. See
     # https://groups.google.com/forum/#!topic/sage-packaging/YGOm8tkADrE
     ./patches/sphinx-docbuild-subprocesses.patch
+
+    # Docbuilding copies files from the Nix store and expects them to be writable.
+    # Remove when https://github.com/matplotlib/matplotlib/pull/23805 lands.
+    ./patches/sphinx-fix-matplotlib-css-perms.patch
   ];
 
   # Since sage unfortunately does not release bugfix releases, packagers must
@@ -111,15 +115,12 @@ stdenv.mkDerivation rec {
 
     # adapted from https://trac.sagemath.org/ticket/23712#comment:22
     ./patches/tachyon-renamed-focallength.patch
-
-    # docutils 0.18.1 now triggers Sphinx warnings. tolerate them for
-    # now, because patching Sphinx is not feasible. remove when Sphinx
-    # 5.0 hits nixpkgs.
-    # https://github.com/sphinx-doc/sphinx/pull/10372
-    ./patches/docutils-0.18.1-deprecation.patch
   ];
 
   patches = nixPatches ++ bugfixPatches ++ packageUpgradePatches;
+
+  # do not create .orig backup files if patch applies with fuzz
+  patchFlags = [ "--no-backup-if-mismatch" "-p1" ];
 
   postPatch = ''
     # Make sure sage can at least be imported without setting any environment
