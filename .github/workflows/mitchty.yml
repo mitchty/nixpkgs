@@ -1,0 +1,26 @@
+name: Sync with upstream
+on:
+  schedule:
+    - cron: "15 1 * * 0"
+  workflow_dispatch:
+jobs:
+  mitchty:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: git remote add nixpkgs https://github.com/NixOS/nixpkgs
+      - run: git fetch nixpkgs
+      - run: git config --global user.email "invalid@example.com"
+      - run: git config --global user.name "Github actions"
+      - run: git merge --no-edit nixpkgs/master
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          branch: master
+          commit_message: Update flake.lock
+          commit_options: '--no-verify --signoff'
+          file_pattern: flake.lock
+          skip_dirty_check: false
+          skip_fetch: true
