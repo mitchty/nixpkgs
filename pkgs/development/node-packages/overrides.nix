@@ -135,10 +135,6 @@ final: prev: {
     meta = oldAttrs.meta // { broken = since "12"; };
   });
 
-  deltachat-desktop = prev."deltachat-desktop-../../applications/networking/instant-messengers/deltachat-desktop".override (oldAttrs: {
-    meta = oldAttrs.meta // { broken = true; }; # use the top-level package instead
-  });
-
   eask = prev."@emacs-eask/cli".override {
     name = "eask";
   };
@@ -414,7 +410,7 @@ final: prev: {
 
     src = fetchurl {
       url = "https://registry.npmjs.org/prisma/-/prisma-${version}.tgz";
-      sha512 = "sha512-TAnObUMGCM9NLt9nsRs1WWYQGPKsJOK8bN/7gSAnBcYIxMCFFDe+XtFYJbyTzsJZ/i+0rH4zg8au3m7HX354LA==";
+      sha512 = "sha512-DWIhxvxt8f4h6MDd35mz7BJff+fu7HItW3WPDIEpCR3RzcOWyiHBbLQW5/DOgmf+pRLTjwXQob7kuTZVYUAw5w==";
     };
     postInstall = with pkgs; ''
       wrapProgram "$out/bin/prisma" \

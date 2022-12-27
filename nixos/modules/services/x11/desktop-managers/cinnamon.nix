@@ -67,12 +67,16 @@ in
 
         # Taken from mint-artwork.gschema.override
         theme = mkIf (notExcluded pkgs.cinnamon.mint-themes) {
-          name = mkDefault "Mint-X";
+          name = mkDefault "Mint-Y-Aqua";
           package = mkDefault pkgs.cinnamon.mint-themes;
         };
         iconTheme = mkIf (notExcluded pkgs.cinnamon.mint-x-icons) {
-          name = mkDefault "Mint-X-Dark";
+          name = mkDefault "Mint-Y-Aqua";
           package = mkDefault pkgs.cinnamon.mint-x-icons;
+        };
+        cursorTheme = mkIf (notExcluded pkgs.cinnamon.mint-cursor-themes) {
+          name = mkDefault "Bibata-Modern-Classic";
+          package = mkDefault pkgs.cinnamon.mint-cursor-themes;
         };
       };
       services.xserver.displayManager.sessionCommands = ''
@@ -101,7 +105,7 @@ in
       services.dbus.packages = with pkgs.cinnamon; [
         cinnamon-common
         cinnamon-screensaver
-        nemo
+        nemo-with-extensions
         xapp
       ];
       services.cinnamon.apps.enable = mkDefault true;
@@ -150,7 +154,7 @@ in
         polkit_gnome
 
         # packages
-        nemo
+        nemo-with-extensions
         cinnamon-control-center
         cinnamon-settings-daemon
         libgnomekbd

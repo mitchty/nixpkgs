@@ -69,10 +69,12 @@ in {
   _3proxy = runTest ./3proxy.nix;
   acme = runTest ./acme.nix;
   adguardhome = runTest ./adguardhome.nix;
-  aesmd = runTest ./aesmd.nix;
+  aesmd = runTestOn ["x86_64-linux"] ./aesmd.nix;
   agate = runTest ./web-servers/agate.nix;
   agda = handleTest ./agda.nix {};
   airsonic = handleTest ./airsonic.nix {};
+  akkoma = handleTestOn [ "x86_64-linux" "aarch64-linux" ] ./akkoma.nix {};
+  akkoma-confined = handleTestOn [ "x86_64-linux" "aarch64-linux" ] ./akkoma.nix { confined = true; };
   allTerminfo = handleTest ./all-terminfo.nix {};
   alps = handleTest ./alps.nix {};
   amazon-init-shell = handleTest ./amazon-init-shell.nix {};
@@ -80,6 +82,7 @@ in {
   apparmor = handleTest ./apparmor.nix {};
   atd = handleTest ./atd.nix {};
   atop = handleTest ./atop.nix {};
+  atuin = handleTest ./atuin.nix {};
   auth-mysql = handleTest ./auth-mysql.nix {};
   avahi = handleTest ./avahi.nix {};
   avahi-with-resolved = handleTest ./avahi.nix { networkd = true; };
@@ -95,6 +98,7 @@ in {
   blockbook-frontend = handleTest ./blockbook-frontend.nix {};
   blocky = handleTest ./blocky.nix {};
   boot = handleTestOn ["x86_64-linux" "aarch64-linux"] ./boot.nix {};
+  bootspec = handleTestOn ["x86_64-linux"] ./bootspec.nix {};
   boot-stage1 = handleTest ./boot-stage1.nix {};
   borgbackup = handleTest ./borgbackup.nix {};
   botamusique = handleTest ./botamusique.nix {};
@@ -113,6 +117,7 @@ in {
   calibre-web = handleTest ./calibre-web.nix {};
   cassandra_3_0 = handleTest ./cassandra.nix { testPackage = pkgs.cassandra_3_0; };
   cassandra_3_11 = handleTest ./cassandra.nix { testPackage = pkgs.cassandra_3_11; };
+  cassandra_4 = handleTest ./cassandra.nix { testPackage = pkgs.cassandra_4; };
   ceph-multi-node = handleTestOn ["x86_64-linux"] ./ceph-multi-node.nix {};
   ceph-single-node = handleTestOn ["x86_64-linux"] ./ceph-single-node.nix {};
   ceph-single-node-bluestore = handleTestOn ["x86_64-linux"] ./ceph-single-node-bluestore.nix {};
@@ -193,6 +198,7 @@ in {
   ergo = handleTest ./ergo.nix {};
   ergochat = handleTest ./ergochat.nix {};
   etc = pkgs.callPackage ../modules/system/etc/test.nix { inherit evalMinimalConfig; };
+  activation = pkgs.callPackage ../modules/system/activation/test.nix { };
   etcd = handleTestOn ["x86_64-linux"] ./etcd.nix {};
   etcd-cluster = handleTestOn ["x86_64-linux"] ./etcd-cluster.nix {};
   etebase-server = handleTest ./etebase-server.nix {};
@@ -207,7 +213,8 @@ in {
   firefox-esr    = handleTest ./firefox.nix { firefoxPackage = pkgs.firefox-esr; }; # used in `tested` job
   firefox-esr-102 = handleTest ./firefox.nix { firefoxPackage = pkgs.firefox-esr-102; };
   firejail = handleTest ./firejail.nix {};
-  firewall = handleTest ./firewall.nix {};
+  firewall = handleTest ./firewall.nix { nftables = false; };
+  firewall-nftables = handleTest ./firewall.nix { nftables = true; };
   fish = handleTest ./fish.nix {};
   flannel = handleTestOn ["x86_64-linux"] ./flannel.nix {};
   fluentd = handleTest ./fluentd.nix {};
@@ -253,6 +260,7 @@ in {
   haste-server = handleTest ./haste-server.nix {};
   haproxy = handleTest ./haproxy.nix {};
   hardened = handleTest ./hardened.nix {};
+  headscale = handleTest ./headscale.nix {};
   healthchecks = handleTest ./web-apps/healthchecks.nix {};
   hbase2 = handleTest ./hbase.nix { package=pkgs.hbase2; };
   hbase_2_4 = handleTest ./hbase.nix { package=pkgs.hbase_2_4; };
@@ -363,7 +371,7 @@ in {
   mailhog = handleTest ./mailhog.nix {};
   man = handleTest ./man.nix {};
   mariadb-galera = handleTest ./mysql/mariadb-galera.nix {};
-  mastodon = handleTestOn ["x86_64-linux" "i686-linux" "aarch64-linux"] ./web-apps/mastodon.nix {};
+  mastodon = discoverTests (import ./web-apps/mastodon { inherit handleTestOn; });
   matomo = handleTest ./matomo.nix {};
   matrix-appservice-irc = handleTest ./matrix/appservice-irc.nix {};
   matrix-conduit = handleTest ./matrix/conduit.nix {};
@@ -408,6 +416,9 @@ in {
   nat.firewall = handleTest ./nat.nix { withFirewall = true; };
   nat.firewall-conntrack = handleTest ./nat.nix { withFirewall = true; withConntrackHelpers = true; };
   nat.standalone = handleTest ./nat.nix { withFirewall = false; };
+  nat.nftables.firewall = handleTest ./nat.nix { withFirewall = true; nftables = true; };
+  nat.nftables.firewall-conntrack = handleTest ./nat.nix { withFirewall = true; withConntrackHelpers = true; nftables = true; };
+  nat.nftables.standalone = handleTest ./nat.nix { withFirewall = false; nftables = true; };
   nats = handleTest ./nats.nix {};
   navidrome = handleTest ./navidrome.nix {};
   nbd = handleTest ./nbd.nix {};
@@ -432,6 +443,7 @@ in {
   nginx = handleTest ./nginx.nix {};
   nginx-auth = handleTest ./nginx-auth.nix {};
   nginx-etag = handleTest ./nginx-etag.nix {};
+  nginx-globalredirect = handleTest ./nginx-globalredirect.nix {};
   nginx-http3 = handleTest ./nginx-http3.nix {};
   nginx-modsecurity = handleTest ./nginx-modsecurity.nix {};
   nginx-njs = handleTest ./nginx-njs.nix {};
@@ -488,6 +500,7 @@ in {
   parsedmarc = handleTest ./parsedmarc {};
   pdns-recursor = handleTest ./pdns-recursor.nix {};
   peerflix = handleTest ./peerflix.nix {};
+  peering-manager = handleTest ./web-apps/peering-manager.nix {};
   peertube = handleTestOn ["x86_64-linux"] ./web-apps/peertube.nix {};
   pgadmin4 = handleTest ./pgadmin4.nix {};
   pgadmin4-standalone = handleTest ./pgadmin4-standalone.nix {};

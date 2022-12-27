@@ -6,7 +6,6 @@
 , clang
 , cmake
 , desktop-file-utils
-, gio-sharp
 , glib
 , gstreamer
 , gtk4
@@ -24,20 +23,20 @@
 
 stdenv.mkDerivation rec {
   pname = "rnote";
-  version = "0.5.7";
+  version = "0.5.10";
 
   src = fetchFromGitHub {
     owner = "flxzt";
     repo = "rnote";
     rev = "v${version}";
     fetchSubmodules = true;
-    hash = "sha256-w4y+t8idcaNwvC2Wp9SRjcd4m23Zt+yHG2fjOA2rBU8=";
+    hash = "sha256-k1Ov35cz2U39yuIYIr9MW6M/A8MNasoybELC4U3xok0=";
   };
 
   cargoDeps = rustPlatform.fetchCargoTarball {
     inherit src;
     name = "${pname}-${version}";
-    hash = "sha256-Hybbbokru4vz5ly3oZuNGdBa+lYbhdYjESUpRxIUqJc=";
+    hash = "sha256-MsLpZl8AvF2BJU6PfC8BmTADR7T3e7+HstHQa+YYJFo=";
   };
 
   nativeBuildInputs = [
@@ -60,7 +59,6 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     alsa-lib
-    gio-sharp
     glib
     gstreamer
     gtk4
@@ -73,14 +71,15 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     pushd build-aux
-    chmod +x meson_post_install.py
-    patchShebangs meson_post_install.py
+    chmod +x cargo_build.py meson_post_install.py
+    patchShebangs cargo_build.py meson_post_install.py
     substituteInPlace meson_post_install.py --replace "gtk-update-icon-cache" "gtk4-update-icon-cache"
     popd
   '';
 
   meta = with lib; {
     homepage = "https://github.com/flxzt/rnote";
+    changelog = "https://github.com/flxzt/rnote/releases/tag/${src.rev}";
     description = "Simple drawing application to create handwritten notes";
     license = licenses.gpl3Only;
     maintainers = with maintainers; [ dotlambda yrd ];
