@@ -79,6 +79,8 @@ let
       # Filesystems.
       "systemd-fsck@.service"
       "systemd-fsck-root.service"
+      "systemd-growfs@.service"
+      "systemd-growfs-root.service"
       "systemd-remount-fs.service"
       "systemd-pstore.service"
       "local-fs.target"
@@ -450,7 +452,7 @@ in
         (mkAfter [ "systemd" ])
       ]);
       group = (mkMerge [
-        (mkAfter [ "systemd" ])
+        (mkAfter [ "[success=merge] systemd" ]) # need merge so that NSS won't stop at file-based groups
       ]);
     };
 
@@ -586,6 +588,15 @@ in
     systemd.services."systemd-backlight@".restartIfChanged = false;
     systemd.services."systemd-fsck@".restartIfChanged = false;
     systemd.services."systemd-fsck@".path = [ config.system.path ];
+    systemd.services."systemd-makefs@" = {
+      restartIfChanged = false;
+      path = [ pkgs.util-linux ] ++ config.system.fsPackages;
+      # Since there is no /etc/systemd/system/systemd-makefs@.service
+      # file, the units generated in /run/systemd/generator would
+      # override anything we put here. But by forcing the use of a
+      # drop-in in /etc, it does apply.
+      overrideStrategy = "asDropin";
+    };
     systemd.services.systemd-random-seed.restartIfChanged = false;
     systemd.services.systemd-remount-fs.restartIfChanged = false;
     systemd.services.systemd-update-utmp.restartIfChanged = false;
@@ -614,7 +625,7 @@ in
 
     # Avoid potentially degraded system state due to
     # "Userspace Out-Of-Memory (OOM) Killer was skipped because of a failed condition check (ConditionControlGroupController=v2)."
-    systemd.services.systemd-oomd.enable = mkIf (!cfg.enableUnifiedCgroupHierarchy) false;
+    systemd.oomd.enable = mkIf (!cfg.enableUnifiedCgroupHierarchy) false;
 
     services.logrotate.settings = {
       "/var/log/btmp" = mapAttrs (_: mkDefault) {

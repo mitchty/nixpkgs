@@ -5,16 +5,16 @@
 
 buildGoModule rec {
   pname = "pocketbase";
-  version = "0.10.1";
+  version = "0.16.4";
 
   src = fetchFromGitHub {
     owner = "pocketbase";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-IFyiopURkza22VYW5VM23hZ+GAKr+ykxn7r/MyQfGAI=";
+    sha256 = "sha256-xthv6/mTtOsT8Q4xk+XXO5TDDCFYcMPFLOv+pkagpU4=";
   };
 
-  vendorSha256 = "sha256-5iT67xJ9pH/QhkMTKvYIU0NsMWg6KVum+trNyt2a2rg=";
+  vendorHash = "sha256-4h3Q8w7emjfZkVr0xujoOUjipXnDQfHOn8Ii19cNllI=";
 
   # This is the released subpackage from upstream repo
   subPackages = [ "examples/base" ];
@@ -32,10 +32,15 @@ buildGoModule rec {
     mv $out/bin/base $out/bin/pocketbase
   '';
 
+  patches = [
+    # To provide a consistent update experience, we remove the built in update method
+    ./remove-update-method.patch
+  ];
+
   meta = with lib; {
     description = "Open Source realtime backend in 1 file";
     homepage = "https://github.com/pocketbase/pocketbase";
     license = licenses.mit;
-    maintainers = with maintainers; [ dit7ya ];
+    maintainers = with maintainers; [ dit7ya thilobillerbeck ];
   };
 }

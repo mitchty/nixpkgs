@@ -23,7 +23,7 @@
 
 buildPythonPackage rec {
   pname = "pyatv";
-  version = "0.10.3";
+  version = "0.12.1";
   format = "setuptools";
 
   disabled = pythonOlder "3.7";
@@ -31,8 +31,8 @@ buildPythonPackage rec {
   src = fetchFromGitHub {
     owner = "postlund";
     repo = pname;
-    rev = "v${version}";
-    hash = "sha256-ng5KfW93p2/N2a6lnGbRJC6aWOQgTl0imBLdUIUlDic=";
+    rev = "refs/tags/v${version}";
+    hash = "sha256-HugvgJAD5R6n8XK802QR7FAaZscyzFRayg48kf3crFQ=";
   };
 
   postPatch = ''
@@ -73,7 +73,7 @@ buildPythonPackage rec {
     zeroconf
   ];
 
-  checkInputs = [
+  nativeCheckInputs = [
     deepdiff
     pytest-aiohttp
     pytest-asyncio

@@ -1,15 +1,17 @@
-{ lib, stdenv, runtimeShell, writeText, fetchFromGitHub, gradle, openjdk17, git, perl, cmake }:
+{ lib, stdenv, runtimeShell, writeText, fetchFromGitHub, gradle_7, openjdk17, git, perl, cmake }:
 let
   pname = "fastddsgen";
-  version = "2.2.0";
+  version = "2.4.0";
 
   src = fetchFromGitHub {
     owner = "eProsima";
     repo = "Fast-DDS-Gen";
     rev = "v${version}";
     fetchSubmodules = true;
-    hash = "sha256-P0Fj8znhky8mTebnoNyojKDdnDowQaGXpX5L0CHcEeU=";
+    hash = "sha256-CSlimEShTxjr6II9YSuNFc/pdbMmqVMCQA0ZJ9rl5j8=";
   };
+
+  gradle = gradle_7;
 
   # fake build to pre-download deps into fixed-output derivation
   deps = stdenv.mkDerivation {
@@ -33,7 +35,7 @@ let
 
     outputHashAlgo = "sha256";
     outputHashMode = "recursive";
-    outputHash = "sha256-wnnoyaO1QndAYrqmYu1fO6OJrP1NQs8IX4uh37dVntY=";
+    outputHash = "sha256-ZGWTK665wIX/Biz4JDrbaU4EZNqT7Q8o6DSpziUd/SM=";
   };
 in
 stdenv.mkDerivation {

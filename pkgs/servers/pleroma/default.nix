@@ -1,23 +1,22 @@
 { lib, beamPackages
 , fetchFromGitHub, fetchFromGitLab, fetchHex
 , file, cmake
-, libxcrypt
+, libxcrypt-legacy
 , nixosTests, writeText
 , ...
 }:
 
 beamPackages.mixRelease rec {
   pname = "pleroma";
-  version = "2.5.0";
+  version = "2.5.2";
 
   src = fetchFromGitLab {
     domain = "git.pleroma.social";
     owner = "pleroma";
     repo = "pleroma";
     rev = "v${version}";
-    sha256 = "sha256-Pry3eEUvrGUXK+x4et7DMbSxz9Mh/o5L0/Mh728mv1U=";
+    sha256 = "sha256-5qxop/hJj1hIsEcK6vJnI2RnAcLf3tO43B0e0FcNZcA=";
   };
-  stripDebug = false;
 
   mixNixDeps = import ./mix.nix {
     inherit beamPackages lib;
@@ -97,24 +96,6 @@ beamPackages.mixRelease rec {
       majic = prev.majic.override {
         buildInputs = [ file ];
       };
-      crypt = beamPackages.buildRebar3 rec {
-        name = "crypt";
-        version = "1.0.0";
-
-        src = fetchFromGitHub {
-          owner = "msantos";
-          repo = "crypt";
-          rev = "f75cd55325e33cbea198fb41fe41871392f8fb76";
-          sha256 = "sha256-ZYhZTe7cTITkl8DZ4z2IOlxTX5gnbJImu/lVJ2ZjR1o=";
-        };
-
-        postInstall = "mv $out/lib/erlang/lib/crypt-${version}/priv/{source,crypt}.so";
-
-        beamDeps = with final; [ elixir_make ];
-
-        buildInputs = [ libxcrypt ];
-      };
-
       # Some additional build inputs and build fixes
       http_signatures = prev.http_signatures.override {
         patchPhase = ''

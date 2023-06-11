@@ -1,39 +1,50 @@
 { stdenv
 , lib
-, pkgs
 , buildGoModule
 , fetchFromGitHub
-, writeText
+, writeShellScriptBin
 , runtimeShell
 , installShellFiles
 , ncurses
 , perl
 , glibcLocales
+, testers
+, fzf
+, fetchpatch
 }:
 
 let
   # on Linux, wrap perl in the bash completion scripts with the glibc locales,
   # so that using the shell completion (ctrl+r, etc) doesn't result in ugly
   # warnings on non-nixos machines
-  ourPerl = if stdenv.isDarwin then perl else (
-    pkgs.writers.writeBashBin "perl" ''
-      #!${pkgs.runtimeShell}
+  ourPerl = if !stdenv.isLinux then perl else (
+    writeShellScriptBin "perl" ''
       export LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive"
       exec ${perl}/bin/perl "$@"
     '');
 in
 buildGoModule rec {
   pname = "fzf";
-  version = "0.35.1";
+  version = "0.41.1";
 
   src = fetchFromGitHub {
     owner = "junegunn";
     repo = pname;
     rev = version;
-    sha256 = "sha256-Zn//z66apkhUd2RvLZSV8PqmocQdVmPngfyK4jmWsfs=";
+    hash = "sha256-YnWc+yStyoZoCKxEMhQC6Z4FZ/OVRaVsAJPtAzGiJVk=";
   };
 
-  vendorSha256 = "sha256-EjcOcrADHdwTCGimv2BRvbjqSZxz4isWhGmPbWQ7YDE=";
+  patches = [
+    (fetchpatch {
+      name = "update-test-case.patch";
+      url = "https://github.com/junegunn/fzf/commit/448d7e0c5a717128d499f6a09a978b7addd1d925.patch";
+      hash = "sha256-54UYW8x78ZcjPwDWmGLVLxw2E910wme2TkBN7YAr1L8=";
+    })
+  ];
+
+  vendorHash = "sha256-O6OjBbrVAxDQd27ar2mmFkU1XyVM2C8SJWJ54rgaf2s=";
+
+  CGO_ENABLED = 0;
 
   outputs = [ "out" "man" ];
 
@@ -66,6 +77,8 @@ buildGoModule rec {
     installManPage man/man1/fzf.1 man/man1/fzf-tmux.1
 
     install -D plugin/* -t $out/share/vim-plugins/${pname}/plugin
+    mkdir -p $out/share/nvim
+    ln -s $out/share/vim-plugins/${pname} $out/share/nvim/site
 
     # Install shell integrations
     install -D shell/* -t $out/share/fzf/
@@ -81,6 +94,10 @@ buildGoModule rec {
     SCRIPT
     chmod +x $out/bin/fzf-share
   '';
+
+  passthru.tests.version = testers.testVersion {
+    package = fzf;
+  };
 
   meta = with lib; {
     homepage = "https://github.com/junegunn/fzf";

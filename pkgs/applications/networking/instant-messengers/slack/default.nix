@@ -41,18 +41,18 @@
 
 let
   inherit (stdenv.hostPlatform) system;
-  throwSystem = throw "Unsupported system: ${system}";
+  throwSystem = throw "slack does not support system: ${system}";
 
   pname = "slack";
 
-  x86_64-darwin-version = "4.29.149";
-  x86_64-darwin-sha256 = "sha256-E0YnOPnaWFe17gCpFywxu5uHs1pEktA1tUu4QqvKhYw=";
+  x86_64-darwin-version = "4.32.122";
+  x86_64-darwin-sha256 = "sha256-aKvMtuo3cNJsw42RNezmETsLAtl6G2yqYGOGp2Pt32U=3";
 
-  x86_64-linux-version = "4.29.149";
-  x86_64-linux-sha256 = "sha256-ulXIGLp2ql47ZS6IeaMuqye39deDtukOB1dxy5BNCwI=";
+  x86_64-linux-version = "4.32.122";
+  x86_64-linux-sha256 = "sha256-ViJHG7s7xqnatNOss5mfa7GqqlHbBrLGHBzTqqo7W/w=";
 
-  aarch64-darwin-version = "4.29.149";
-  aarch64-darwin-sha256 = "sha256-Nn+dFD3H/By+aBPLDxnPneNXuFl+tHdLhxJXeYBMORg=";
+  aarch64-darwin-version = "4.32.122";
+  aarch64-darwin-sha256 = "sha256-j3PbH/5cKN5+vUiLvXaxyPYilt6GX6FsGo+1hlJKrls=";
 
   version = {
     x86_64-darwin = x86_64-darwin-version;
@@ -172,12 +172,13 @@ let
       makeWrapper $out/lib/slack/slack $out/bin/slack \
         --prefix XDG_DATA_DIRS : $GSETTINGS_SCHEMAS_PATH \
         --suffix PATH : ${lib.makeBinPath [xdg-utils]} \
-        --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations}}"
+        --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations,WebRTCPipeWireCapturer}}"
 
       # Fix the desktop link
       substituteInPlace $out/share/applications/slack.desktop \
         --replace /usr/bin/ $out/bin/ \
-        --replace /usr/share/ $out/share/
+        --replace /usr/share/pixmaps/slack.png slack \
+        --replace bin/slack "bin/slack -s"
 
       runHook postInstall
     '';

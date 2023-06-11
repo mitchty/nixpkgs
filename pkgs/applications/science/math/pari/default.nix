@@ -1,6 +1,7 @@
 { lib
 , stdenv
 , fetchurl
+, fetchpatch
 , gmp
 , libX11
 , libpthreadstubs
@@ -14,7 +15,7 @@ assert withThread -> libpthreadstubs != null;
 
 stdenv.mkDerivation rec {
   pname = "pari";
-  version = "2.15.1";
+  version = "2.15.3";
 
   src = fetchurl {
     urls = [
@@ -22,8 +23,18 @@ stdenv.mkDerivation rec {
       # old versions are at the url below
       "https://pari.math.u-bordeaux.fr/pub/pari/OLD/${lib.versions.majorMinor version}/${pname}-${version}.tar.gz"
     ];
-    hash = "sha256-RUGdt3xmhb7mfkLg7LeOGe9WK+eq/GN8ikGXDy6Qnj0=";
+    hash = "sha256-rfWlhjjNr9cqi0i8n0RJcrIzKcjVRaHT7Ru+sbZWkmg=";
   };
+
+  patches = [
+    # https://pari.math.u-bordeaux.fr/cgi-bin/bugreport.cgi?bug=2466
+    (fetchpatch {
+      name = "incorrect-result-from-qfbclassno.patch";
+      url = "https://pari.math.u-bordeaux.fr/cgi-bin/gitweb.cgi?p=pari.git;a=commitdiff_plain;h=7ca0c2eae87def89fa7253c60e4791a8ef26629d";
+      excludes = [ "src/test/32/quadclassunit" "CHANGES" ];
+      hash = "sha256-CQRkIYDFMrWHCoSWGsIydPjGk3w09zzghajlNuq29Jk=";
+    })
+  ];
 
   buildInputs = [
     gmp

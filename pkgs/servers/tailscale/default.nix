@@ -2,15 +2,15 @@
 
 buildGoModule rec {
   pname = "tailscale";
-  version = "1.34.1";
+  version = "1.42.0";
 
   src = fetchFromGitHub {
     owner = "tailscale";
     repo = "tailscale";
     rev = "v${version}";
-    sha256 = "sha256-C+Ae90mDzMwnBlKpr3ysdGypo4UaqRfSMfOl3zcuKRE=";
+    hash = "sha256-J7seajRoUOG/nm5iYuiv3lcS5vTT1XxZTxiSmf/TjGI=";
   };
-  vendorSha256 = "sha256-nSllDi6G4QAGyuoGduDhI0vaVuN2//eg+gXRSZ3ERiQ=";
+  vendorHash = "sha256-7L+dvS++UNfMVcPUCbK/xuBPwtrzW4RpZTtcl7VCwQs=";
 
   nativeBuildInputs = lib.optionals stdenv.isLinux [ makeWrapper ];
 
@@ -18,7 +18,12 @@ buildGoModule rec {
 
   subPackages = [ "cmd/tailscale" "cmd/tailscaled" ];
 
-  ldflags = [ "-X tailscale.com/version.Long=${version}" "-X tailscale.com/version.Short=${version}" ];
+  ldflags = [
+    "-w"
+    "-s"
+    "-X tailscale.com/version.longStamp=${version}"
+    "-X tailscale.com/version.shortStamp=${version}"
+  ];
 
   doCheck = false;
 

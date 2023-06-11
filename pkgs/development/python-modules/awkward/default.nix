@@ -14,14 +14,14 @@
 
 buildPythonPackage rec {
   pname = "awkward";
-  version = "2.0.0";
+  version = "2.2.1";
   format = "pyproject";
 
   disabled = pythonOlder "3.7";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-N4KzRkMIPW7nZE6f2z2ur8S2AwpmfyGf1hy3sjSXa2g=";
+    sha256 = "653e5b69f1c8e32d1d59445a8414d03f850d327eb933f45aad163f0778861dc2";
   };
 
   nativeBuildInputs = [
@@ -39,7 +39,7 @@ buildPythonPackage rec {
 
   dontUseCmakeConfigure = true;
 
-  checkInputs = [
+  nativeCheckInputs = [
     pytestCheckHook
     numba
   ];

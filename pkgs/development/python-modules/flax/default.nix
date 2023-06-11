@@ -17,13 +17,13 @@
 
 buildPythonPackage rec {
   pname = "flax";
-  version = "0.6.1";
+  version = "0.6.5";
 
   src = fetchFromGitHub {
     owner = "google";
     repo = pname;
     rev = "refs/tags/v${version}";
-    sha256 = "sha256-fZiODo+izOwGjCCTvi11GvUG/VQL1DV9bNXKjvIIw4A=";
+    hash = "sha256-Vv68BK83gTIKj0r9x+twdhqmRYziD0vxQCdHkYSeTak=";
   };
 
   buildInputs = [ jaxlib ];
@@ -41,7 +41,7 @@ buildPythonPackage rec {
     "flax"
   ];
 
-  checkInputs = [
+  nativeCheckInputs = [
     keras
     pytest-xdist
     pytestCheckHook
@@ -85,7 +85,10 @@ buildPythonPackage rec {
   meta = with lib; {
     description = "Neural network library for JAX";
     homepage = "https://github.com/google/flax";
+    changelog = "https://github.com/google/flax/releases/tag/v${version}";
     license = licenses.asl20;
     maintainers = with maintainers; [ ndl ];
+    # Requires orbax which is not available
+    broken = true;
   };
 }

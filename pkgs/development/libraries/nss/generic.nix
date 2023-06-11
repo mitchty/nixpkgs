@@ -47,6 +47,11 @@ stdenv.mkDerivation rec {
       ./85_security_load_3.85+.patch
     )
     ./fix-cross-compilation.patch
+  ] ++ lib.optionals (lib.versionOlder version "3.89") [
+    # Backport gcc-13 build fix:
+    #  https://bugzilla.mozilla.org/show_bug.cgi?id=1771273
+    #  https://hg.mozilla.org/projects/nss/raw-rev/21e7aaa1f7d94bca15d997e5b4c2329b32fad21a
+    ./gcc-13-esr.patch
   ];
 
   patchFlags = [ "-p0" ];
@@ -96,6 +101,7 @@ stdenv.mkDerivation rec {
         -Dhost_arch=${host} \
         -Duse_system_zlib=1 \
         --enable-libpkix \
+        -j $NIX_BUILD_CORES \
         ${lib.optionalString enableFIPS "--enable-fips"} \
         ${lib.optionalString stdenv.isDarwin "--clang"} \
         ${lib.optionalString (stdenv.hostPlatform != stdenv.buildPlatform) "--disable-tests"}
@@ -103,7 +109,14 @@ stdenv.mkDerivation rec {
       runHook postBuild
     '';
 
-  NIX_CFLAGS_COMPILE = "-Wno-error -DNIX_NSS_LIBDIR=\"${placeholder "out"}/lib/\" " + lib.optionalString stdenv.hostPlatform.is64bit "-DNSS_USE_64=1";
+  env.NIX_CFLAGS_COMPILE = toString ([
+    "-Wno-error"
+    "-DNIX_NSS_LIBDIR=\"${placeholder "out"}/lib/\""
+  ] ++ lib.optionals stdenv.hostPlatform.is64bit [
+    "-DNSS_USE_64=1"
+  ] ++ lib.optionals stdenv.hostPlatform.isILP32 [
+    "-DNS_PTR_LE_32=1" # See RNG_RandomUpdate() in drdbg.c
+  ]);
 
   installPhase = ''
     runHook preInstall

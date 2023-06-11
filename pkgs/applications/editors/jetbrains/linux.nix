@@ -1,14 +1,12 @@
 { stdenv, lib, makeDesktopItem, makeWrapper, patchelf, writeText
 , coreutils, gnugrep, which, git, unzip, libsecret, libnotify, e2fsprogs
-, vmopts ? null
+, python3, vmopts ? null
 }:
 
 { pname, product, productShort ? product, version, src, wmClass, jdk, meta, extraLdPath ? [], extraWrapperArgs ? [] }@args:
 
-with lib;
-
-let loName = toLower productShort;
-    hiName = toUpper productShort;
+let loName = lib.toLower productShort;
+    hiName = lib.toUpper productShort;
     vmoptsName = loName
                + lib.optionalString stdenv.hostPlatform.is64bit "64"
                + ".vmoptions";
@@ -29,7 +27,7 @@ with stdenv; lib.makeOverridable mkDerivation (rec {
     startupWMClass = wmClass;
   };
 
-  vmoptsFile = optionalString (vmopts != null) (writeText vmoptsName vmopts);
+  vmoptsFile = lib.optionalString (vmopts != null) (writeText vmoptsName vmopts);
 
   nativeBuildInputs = [ makeWrapper patchelf unzip ];
 
@@ -45,6 +43,8 @@ with stdenv; lib.makeOverridable mkDerivation (rec {
         strip $fname
         truncate --size=$size $fname
       }
+
+      rm -rf jbr
 
       interpreter=$(echo ${stdenv.cc.libc}/lib/ld-linux*.so.2)
       if [[ "${stdenv.hostPlatform.system}" == "x86_64-linux" && -e bin/fsnotifier64 ]]; then
@@ -71,7 +71,7 @@ with stdenv; lib.makeOverridable mkDerivation (rec {
     item=${desktopItem}
 
     makeWrapper "$out/$pname/bin/${loName}.sh" "$out/bin/${pname}" \
-      --prefix PATH : "$out/libexec/${pname}:${lib.makeBinPath [ jdk coreutils gnugrep which git ]}" \
+      --prefix PATH : "$out/libexec/${pname}:${lib.makeBinPath [ jdk coreutils gnugrep which git python3 ]}" \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath ([
         # Some internals want libstdc++.so.6
         stdenv.cc.cc.lib libsecret e2fsprogs

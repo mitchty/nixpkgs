@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, substituteAll, swaybg
+{ lib, stdenv, fetchFromGitHub, fetchpatch, substituteAll, swaybg
 , meson, ninja, pkg-config, wayland-scanner, scdoc
 , wayland, libxkbcommon, pcre2, json_c, libevdev
 , pango, cairo, libinput, libcap, pam, gdk-pixbuf, librsvg
@@ -6,9 +6,8 @@
 , nixosTests
 # Used by the NixOS module:
 , isNixOS ? false
-
 , enableXWayland ? true, xorg
-, systemdSupport ? stdenv.isLinux
+, systemdSupport ? lib.meta.availableOn stdenv.hostPlatform systemd, systemd
 , dbusSupport ? true
 , dbus
 , trayEnabled ? systemdSupport && dbusSupport
@@ -23,13 +22,13 @@ let sd-bus-provider = if systemdSupport then "libsystemd" else "basu"; in
 
 stdenv.mkDerivation rec {
   pname = "sway-unwrapped";
-  version = "1.8";
+  version = "1.8.1";
 
   src = fetchFromGitHub {
     owner = "swaywm";
     repo = "sway";
     rev = version;
-    hash = "sha256-r5qf50YK0Wl0gFiFdSE/J6ZU+D/Cz32u1mKzOqnIuJ0=";
+    hash = "sha256-WxnT+le9vneQLFPz2KoBduOI+zfZPhn1fKlaqbPL6/g=";
   };
 
   patches = [
@@ -38,6 +37,12 @@ stdenv.mkDerivation rec {
     (substituteAll {
       src = ./fix-paths.patch;
       inherit swaybg;
+    })
+
+    (fetchpatch {
+      name = "LIBINPUT_CONFIG_ACCEL_PROFILE_CUSTOM.patch";
+      url = "https://github.com/swaywm/sway/commit/dee032d0a0ecd958c902b88302dc59703d703c7f.diff";
+      hash = "sha256-dx+7MpEiAkxTBnJcsT3/1BO8rYRfNLecXmpAvhqGMD0=";
     })
   ] ++ lib.optionals (!isNixOS) [
     # References to /nix/store/... will get GC'ed which causes problems when

@@ -2,24 +2,24 @@
 
 buildGoModule rec {
   pname = "steampipe";
-  version = "0.16.4";
+  version = "0.20.5";
 
   src = fetchFromGitHub {
     owner = "turbot";
     repo = "steampipe";
     rev = "v${version}";
-    sha256 = "sha256-awZlA02lKYpFdvCsGUC8Blv8FHek5XskkljseDGjDmk=";
+    sha256 = "sha256-hpI667LNXwLhA/MgnlfLc/jk88ec94faV8hLnlAJ6ew=";
   };
 
-  vendorSha256 = "sha256-6l3bBxGhdZGIXmdzgF44TGZQqT6gSUHSwOAE2SlgLgg=";
+  vendorHash = "sha256-FWLEuSdhXSQJMd4PiiPTFC8aXkIlQ9LhL6/Dq7LkPPc=";
   proxyVendor = true;
 
   patchPhase = ''
     runHook prePatch
     # Patch test that relies on looking up homedir in user struct to prefer ~
     substituteInPlace pkg/steampipeconfig/shared_test.go \
-      --replace '"github.com/turbot/go-kit/helpers"' "" \
-      --replace 'filepaths.SteampipeDir, _ = helpers.Tildefy("~/.steampipe")' 'filepaths.SteampipeDir = "~/.steampipe"';
+      --replace 'filehelpers "github.com/turbot/go-kit/files"' "" \
+      --replace 'filepaths.SteampipeDir, _ = filehelpers.Tildefy("~/.steampipe")' 'filepaths.SteampipeDir = "~/.steampipe"';
     runHook postPatch
   '';
 

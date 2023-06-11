@@ -1,10 +1,8 @@
 { buildGoModule
 , fetchFromGitHub
 , fetchurl
-, fetchpatch
 , go-bindata
 , lib
-, llvmPackages
 , perl
 , pkg-config
 , rustPlatform
@@ -43,15 +41,14 @@ let
     };
     sourceRoot = "source/libflux";
     cargoSha256 = "sha256-9rPW0lgi3lXJARa1KXgSY8LVJsoFjppok5ODGlqYeYw=";
-    nativeBuildInputs = [ llvmPackages.libclang ];
+    nativeBuildInputs = [ rustPlatform.bindgenHook ];
     buildInputs = lib.optional stdenv.isDarwin libiconv;
-    LIBCLANG_PATH = "${llvmPackages.libclang.lib}/lib";
     pkgcfg = ''
       Name: flux
       Version: ${libflux_version}
       Description: Library for the InfluxData Flux engine
       Cflags: -I/out/include
-      Libs: -L/out/lib -lflux -ldl -lpthread
+      Libs: -L/out/lib -lflux -lpthread
     '';
     passAsFile = [ "pkgcfg" ];
     postInstall = ''

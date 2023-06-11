@@ -3,6 +3,7 @@
 , buildPythonPackage
 , pythonOlder
 , fetchFromGitHub
+, miniaudio
 , cffi
 , pytestCheckHook
 , AudioToolbox
@@ -11,16 +12,27 @@
 
 buildPythonPackage rec {
   pname = "miniaudio";
-  version = "1.55";
+  version = "1.59";
 
   disabled = pythonOlder "3.6";
+
+  format = "setuptools";
 
   src = fetchFromGitHub {
     owner = "irmen";
     repo = "pyminiaudio";
     rev = "refs/tags/v${version}";
-    hash = "sha256-na8pnYIoawICbsVquzlmfYZtIagsVBudFOKJ62jSTGM=";
+    hash = "sha256-tMQOGqEThtownW3cnNpCzWye0Uo/Es7E8abVySo1QnQ=";
   };
+
+  postPatch = ''
+    rm -r miniaudio
+    ln -s ${miniaudio} miniaudio
+    substituteInPlace build_ffi_module.py \
+      --replace "miniaudio/stb_vorbis.c" "miniaudio/extras/stb_vorbis.c";
+    substituteInPlace miniaudio.c \
+      --replace "miniaudio/stb_vorbis.c" "miniaudio/extras/stb_vorbis.c";
+  '';
 
   buildInputs = lib.optionals stdenv.isDarwin [
     AudioToolbox
@@ -30,7 +42,7 @@ buildPythonPackage rec {
   propagatedNativeBuildInputs = [ cffi ];
   propagatedBuildInputs = [ cffi ];
 
-  checkInputs = [
+  nativeCheckInputs = [
     pytestCheckHook
   ];
 

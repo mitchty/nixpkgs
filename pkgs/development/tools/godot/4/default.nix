@@ -1,38 +1,49 @@
 { stdenv
 , lib
 , fetchFromGitHub
-, installShellFiles
-, autoPatchelfHook
 , pkg-config
+, autoPatchelfHook
+, installShellFiles
 , scons
 , vulkan-loader
+, libGL
 , libX11
 , libXcursor
 , libXinerama
-, libXi
-, libXrandr
 , libXext
+, libXrandr
+, libXrender
+, libXi
 , libXfixes
-, libGLU
-, freetype
+, libxkbcommon
 , alsa-lib
 , libpulseaudio
 , dbus
 , speechd
 , fontconfig
 , udev
-, withPulseaudio ? false
+, withPlatform ? "linuxbsd"
+, withTarget ? "editor"
+, withPrecision ? "single"
+, withPulseaudio ? true
 , withDbus ? true
-, withSpeechd ? false
+, withSpeechd ? true
 , withFontconfig ? true
 , withUdev ? true
 , withTouch ? true
 }:
 
+assert lib.asserts.assertOneOf "withPrecision" withPrecision [ "single" "double" ];
+
 let
-  # Options from godot/platform/linuxbsd/detect.py
   options = {
-    pulseaudio = withPulseaudio;
+    # Options from 'godot/SConstruct'
+    platform = withPlatform;
+    target = withTarget;
+    precision = withPrecision; # Floating-point precision level
+
+    # Options from 'godot/platform/linuxbsd/detect.py'
+    pulseaudio = withPulseaudio; # Use PulseAudio
     dbus = withDbus; # Use D-Bus to handle screensaver and portal desktop settings
     speechd = withSpeechd; # Use Speech Dispatcher for Text-to-Speech support
     fontconfig = withFontconfig; # Use fontconfig for system fonts support
@@ -42,13 +53,13 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "godot";
-  version = "4.0-beta3";
+  version = "4.0.3-stable";
 
   src = fetchFromGitHub {
     owner = "godotengine";
     repo = "godot";
-    rev = "01ae26d31befb6679ecd92cd3c73aa5a76162e95";
-    sha256 = "sha256-Q+zMviGevezjcQKJPOm7zAu4liJ5z8Rl73TYmjRR3MY=";
+    rev = version;
+    hash = "sha256-g9+CV3HsiJqiSJpZvK0N7BqKzp2Pvi6otjRLsFdmWGk=";
   };
 
   nativeBuildInputs = [
@@ -59,39 +70,34 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     scons
-    libGLU
-    libX11
-    libXcursor
-    libXinerama
-    libXi
-    libXrandr
-    libXext
-    libXfixes
-  ]
-  ++ runtimeDependencies
-  # Necessary to make godot see fontconfig.lib and dbus.lib
-  ++ lib.optional withFontconfig fontconfig
-  ++ lib.optional withDbus dbus;
+  ];
 
   runtimeDependencies = [
     vulkan-loader
+    libGL
+    libX11
+    libXcursor
+    libXinerama
+    libXext
+    libXrandr
+    libXrender
+    libXi
+    libXfixes
+    libxkbcommon
     alsa-lib
   ]
   ++ lib.optional withPulseaudio libpulseaudio
+  ++ lib.optional withDbus dbus
   ++ lib.optional withDbus dbus.lib
   ++ lib.optional withSpeechd speechd
+  ++ lib.optional withFontconfig fontconfig
   ++ lib.optional withFontconfig fontconfig.lib
   ++ lib.optional withUdev udev;
 
-  patches = [
-    # Godot expects to find xfixes inside xi, but nix's pkg-config only
-    # gives the libs for the requested package (ignoring the propagated-build-inputs)
-    ./xfixes.patch
-  ];
-
   enableParallelBuilding = true;
 
-  sconsFlags = [ "platform=linuxbsd target=editor production=true" ];
+  # Options from 'godot/SConstruct' and 'godot/platform/linuxbsd/detect.py'
+  sconsFlags = [ "production=true" ];
   preConfigure = ''
     sconsFlags+=" ${
       lib.concatStringsSep " "
@@ -103,14 +109,15 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p "$out/bin"
-    cp bin/godot.* $out/bin/godot
+    cp bin/godot.* $out/bin/godot4
 
     installManPage misc/dist/linux/godot.6
 
     mkdir -p "$out"/share/{applications,icons/hicolor/scalable/apps}
-    cp misc/dist/linux/org.godotengine.Godot.desktop "$out/share/applications/"
-    substituteInPlace "$out/share/applications/org.godotengine.Godot.desktop" \
-      --replace "Exec=godot" "Exec=$out/bin/godot"
+    cp misc/dist/linux/org.godotengine.Godot.desktop "$out/share/applications/org.godotengine.Godot4.desktop"
+    substituteInPlace "$out/share/applications/org.godotengine.Godot4.desktop" \
+      --replace "Exec=godot" "Exec=$out/bin/godot4" \
+      --replace "Godot Engine" "Godot Engine 4"
     cp icon.svg "$out/share/icons/hicolor/scalable/apps/godot.svg"
     cp icon.png "$out/share/icons/godot.png"
   '';
@@ -119,7 +126,7 @@ stdenv.mkDerivation rec {
     homepage = "https://godotengine.org";
     description = "Free and Open Source 2D and 3D game engine";
     license = licenses.mit;
-    platforms = [ "i686-linux" "x86_64-linux" ];
+    platforms = [ "i686-linux" "x86_64-linux" "aarch64-linux" ];
     maintainers = with maintainers; [ twey shiryel ];
   };
 }

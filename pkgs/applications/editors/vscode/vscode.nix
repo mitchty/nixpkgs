@@ -1,6 +1,7 @@
 { stdenv, lib, callPackage, fetchurl
 , isInsiders ? false
 , commandLineArgs ? ""
+, useVSCodeRipgrep ? stdenv.isDarwin
 }:
 
 let
@@ -18,29 +19,32 @@ let
   archive_fmt = if stdenv.isDarwin then "zip" else "tar.gz";
 
   sha256 = {
-    x86_64-linux = "0xdj5v2n34d6p49ng13qr9d4yyyvqr96qv15la2fda9s7n1s659c";
-    x86_64-darwin = "0jgrf534qy39nki0rfc8lrdbdb8ghzarckd3cx9fzq6bw1p2jy1f";
-    aarch64-linux = "133577j6i709dq4ircnh2yklylcmy0kgs6lhly7mx8nrag8qi9c1";
-    aarch64-darwin = "18346igq8b1d0kywy9alvzm0glb46aalznnhr5mql5rhaana92xw";
-    armv7l-linux = "0l0wvgi981ryqbhyh5qalr8lasyf3pg4pzqs9f9hc75ppk4d6sny";
+    x86_64-linux = "13yd42jqlzjxg5afs05ph2z4xwsfkbcddqvc4fvz1qqwr698mkjj";
+    x86_64-darwin = "1slmqrxhrwm04v0lisc200mx6jv86vf5p62as4brzz9irnv707ry";
+    aarch64-linux = "1q99y9jx3c8z0l3pda0b79c50yff8as4z9c4dxwf7b67argi5ls6";
+    aarch64-darwin = "0ykb0ifkswv3rcp3x6rkm8r88flsfmwhlrlc4f55mbgj7jbfn5k3";
+    armv7l-linux = "0gshhing3drsrmf17jykafks7z587ixk63xinrdv62xl4x4qxca8";
   }.${system} or throwSystem;
 in
   callPackage ./generic.nix rec {
     # Please backport all compatible updates to the stable release.
     # This is important for the extension ecosystem.
-    version = "1.74.2";
+    version = "1.79.0";
     pname = "vscode";
 
     executableName = "code" + lib.optionalString isInsiders "-insiders";
     longName = "Visual Studio Code" + lib.optionalString isInsiders " - Insiders";
     shortName = "Code" + lib.optionalString isInsiders " - Insiders";
-    inherit commandLineArgs;
+    inherit commandLineArgs useVSCodeRipgrep;
 
     src = fetchurl {
       name = "VSCode_${version}_${plat}.${archive_fmt}";
       url = "https://update.code.visualstudio.com/${version}/${plat}/stable";
       inherit sha256;
     };
+
+    # We don't test vscode on CI, instead we test vscodium
+    tests = {};
 
     sourceRoot = "";
 

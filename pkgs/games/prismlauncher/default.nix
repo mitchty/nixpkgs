@@ -2,27 +2,18 @@
 , stdenv
 , fetchFromGitHub
 , cmake
-, jdk8
+, ninja
 , jdk17
 , zlib
-, file
-, wrapQtAppsHook
-, xorg
-, libpulseaudio
 , qtbase
-, qtsvg
-, qtwayland
-, libGL
 , quazip
-, glfw
-, openal
 , extra-cmake-modules
 , tomlplusplus
 , ghc_filesystem
-, msaClientID ? ""
-, jdks ? [ jdk17 jdk8 ]
+, gamemode
+, msaClientID ? null
+, gamemodeSupport ? true
 }:
-
 let
   libnbtplusplus = fetchFromGitHub {
     owner = "PrismLauncher";
@@ -31,63 +22,37 @@ let
     sha256 = "sha256-TvVOjkUobYJD9itQYueELJX3wmecvEdCbJ0FinW2mL4=";
   };
 in
-
 stdenv.mkDerivation rec {
-  pname = "prismlauncher";
-  version = "6.1";
+  pname = "prismlauncher-unwrapped";
+  version = "6.3";
 
   src = fetchFromGitHub {
     owner = "PrismLauncher";
     repo = "PrismLauncher";
     rev = version;
-    sha256 = "sha256-aIBaenSnssv0/r2+UT5R4nBwo2QBGZ1Zp0CWOeiaeDE=";
+    sha256 = "sha256-7tptHKWkbdxTn6VIPxXE1K3opKRiUW2zv9r6J05dcS8=";
   };
 
-  nativeBuildInputs = [ extra-cmake-modules cmake file jdk17 wrapQtAppsHook ];
+  nativeBuildInputs = [ extra-cmake-modules cmake jdk17 ninja ];
   buildInputs = [
     qtbase
-    qtsvg
     zlib
     quazip
     ghc_filesystem
     tomlplusplus
-  ] ++ lib.optional (lib.versionAtLeast qtbase.version "6") qtwayland;
+  ] ++ lib.optional gamemodeSupport gamemode;
 
-  cmakeFlags = lib.optionals (msaClientID != "") [ "-DLauncher_MSA_CLIENT_ID=${msaClientID}" ]
+  hardeningEnable = [ "pie" ];
+
+  cmakeFlags = lib.optionals (msaClientID != null) [ "-DLauncher_MSA_CLIENT_ID=${msaClientID}" ]
     ++ lib.optionals (lib.versionAtLeast qtbase.version "6") [ "-DLauncher_QT_VERSION_MAJOR=6" ];
-  dontWrapQtApps = true;
 
   postUnpack = ''
     rm -rf source/libraries/libnbtplusplus
-    mkdir source/libraries/libnbtplusplus
-    ln -s ${libnbtplusplus}/* source/libraries/libnbtplusplus
-    chmod -R +r+w source/libraries/libnbtplusplus
-    chown -R $USER: source/libraries/libnbtplusplus
+    ln -s ${libnbtplusplus} source/libraries/libnbtplusplus
   '';
 
-  postInstall =
-    let
-      libpath = with xorg;
-        lib.makeLibraryPath [
-          libX11
-          libXext
-          libXcursor
-          libXrandr
-          libXxf86vm
-          libpulseaudio
-          libGL
-          glfw
-          openal
-          stdenv.cc.cc.lib
-        ];
-    in
-    ''
-      # xorg.xrandr needed for LWJGL [2.9.2, 3) https://github.com/LWJGL/lwjgl/issues/128
-      wrapQtApp $out/bin/prismlauncher \
-        --set LD_LIBRARY_PATH /run/opengl-driver/lib:${libpath} \
-        --prefix PRISMLAUNCHER_JAVA_PATHS : ${lib.makeSearchPath "bin/java" jdks} \
-        --prefix PATH : ${lib.makeBinPath [xorg.xrandr]}
-    '';
+  dontWrapQtApps = true;
 
   meta = with lib; {
     homepage = "https://prismlauncher.org/";

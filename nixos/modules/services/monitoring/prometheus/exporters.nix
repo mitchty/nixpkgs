@@ -35,6 +35,7 @@ let
     "dovecot"
     "fastly"
     "fritzbox"
+    "graphite"
     "influxdb"
     "ipmi"
     "json"
@@ -64,6 +65,7 @@ let
     "rspamd"
     "rtl_433"
     "script"
+    "shelly"
     "snmp"
     "smartctl"
     "smokeping"
@@ -323,7 +325,7 @@ in
   );
 
   meta = {
-    doc = ./exporters.xml;
+    doc = ./exporters.md;
     maintainers = [ maintainers.willibutz ];
   };
 }

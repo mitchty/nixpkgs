@@ -7,16 +7,16 @@
 
 buildGoModule rec {
   pname = "operator-sdk";
-  version = "1.26.0";
+  version = "1.29.0";
 
   src = fetchFromGitHub {
     owner = "operator-framework";
     repo = pname;
     rev = "refs/tags/v${version}";
-    hash = "sha256-hIJTdTZ24+VwF1M/RvKcnQRzZga0nsjlTTUFYxZn0lo=";
+    hash = "sha256-oHGs1Bx5k02k6mp9WAe8wIQ4FjMOREcUYv0DKZaXGdE=";
   };
 
-  vendorHash = "sha256-1Vz+SIrNULajDqzZt53+o9wv1zLPBvKrO28BTqS4VbM=";
+  vendorHash = "sha256-I2vL4uRmUbgaf3KGUHSQV2jWozStKHyjek3BQlxyY/c=";
 
   nativeBuildInputs = [
     makeWrapper
@@ -29,6 +29,8 @@ buildGoModule rec {
   doCheck = false;
 
   subPackages = [
+    "cmd/ansible-operator"
+    "cmd/helm-operator"
     "cmd/operator-sdk"
   ];
 

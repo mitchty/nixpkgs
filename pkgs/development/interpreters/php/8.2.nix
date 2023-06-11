@@ -1,9 +1,9 @@
-{ callPackage, lib, stdenv, fetchurl, ... }@_args:
+{ callPackage, ... }@_args:
 
 let
   base = callPackage ./generic.nix (_args // {
-    version = "8.2.0";
-    hash = "sha256-G/T8pmP5PZ4LSQm9bq4Fg6HOOD5/Bd8Sbyjycvof1Ro=";
+    version = "8.2.7";
+    hash = "sha256-W/sqNcZ5Ib3K3VyQyykK11N9JNoROl6LwtZGsC3nSI8=";
   });
 
 in

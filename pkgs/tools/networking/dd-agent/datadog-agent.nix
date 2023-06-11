@@ -1,14 +1,14 @@
 { lib
 , stdenv
 , cmake
-, buildGo118Module
+, buildGoModule
 , makeWrapper
 , fetchFromGitHub
 , pythonPackages
 , pkg-config
 , systemd
 , hostname
-, withSystemd ? stdenv.isLinux
+, withSystemd ? lib.meta.availableOn stdenv.hostPlatform systemd
 , extraTags ? [ ]
 }:
 
@@ -35,7 +35,7 @@ let
     cmakeFlags = ["-DBUILD_DEMO=OFF" "-DDISABLE_PYTHON2=ON"];
   };
 
-in buildGo118Module rec {
+in buildGoModule rec {
   pname = "datadog-agent";
   inherit src version;
 

@@ -7,7 +7,7 @@
 , perl
 , openssl
 , zlib
-, ffmpeg
+, ffmpeg_4
 , libvpx
 , libopus
 , libuuid
@@ -19,13 +19,13 @@
 
 stdenv.mkDerivation rec {
   pname = "oven-media-engine";
-  version = "0.14.18";
+  version = "0.15.11";
 
   src = fetchFromGitHub {
     owner = "AirenSoft";
     repo = "OvenMediaEngine";
     rev = "v${version}";
-    sha256 = "sha256-M204aIFbs2VmwgZbOmkpuyqOfpom/FnKc6noEVMuZfs=";
+    sha256 = "sha256-PkdzxLIch0OObFs1zFE7gg6R7bwP2qwpqQqvY3SMnuY=";
   };
 
   sourceRoot = "source/src";
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
   enableParallelBuilding = true;
 
   nativeBuildInputs = [ bc pkg-config perl ];
-  buildInputs = [ openssl srt zlib ffmpeg libvpx libopus srtp jemalloc pcre2 libuuid hiredis ];
+  buildInputs = [ openssl srt zlib ffmpeg_4 libvpx libopus srtp jemalloc pcre2 libuuid hiredis ];
 
   preBuild = ''
     patchShebangs core/colorg++
@@ -60,6 +60,6 @@ stdenv.mkDerivation rec {
     homepage    = "https://ovenmediaengine.com";
     license     = licenses.agpl3Only;
     maintainers = with maintainers; [ lukegb ];
-    platforms   = [ "x86_64-linux" ];
+    platforms   = platforms.linux;
   };
 }

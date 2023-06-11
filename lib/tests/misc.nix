@@ -4,6 +4,11 @@
 with import ../default.nix;
 
 let
+  testingThrow = expr: {
+    expr = (builtins.tryEval (builtins.seq expr "didn't throw"));
+    expected = { success = false; value = false; };
+  };
+  testingDeepThrow = expr: testingThrow (builtins.deepSeq expr expr);
 
   testSanitizeDerivationName = { name, expected }:
   let
@@ -151,6 +156,11 @@ runTests {
   testConcatStringsSep = {
     expr = concatStringsSep "," ["a" "b" "c"];
     expected = "a,b,c";
+  };
+
+  testConcatLines = {
+    expr = concatLines ["a" "b" "c"];
+    expected = "a\nb\nc\n";
   };
 
   testSplitStringsSimple = {
@@ -342,6 +352,15 @@ runTests {
     expected = "Hello\\x20World";
   };
 
+  testEscapeURL = testAllTrue [
+    ("" == strings.escapeURL "")
+    ("Hello" == strings.escapeURL "Hello")
+    ("Hello%20World" == strings.escapeURL "Hello World")
+    ("Hello%2FWorld" == strings.escapeURL "Hello/World")
+    ("42%25" == strings.escapeURL "42%")
+    ("%20%3F%26%3D%23%2B%25%21%3C%3E%23%22%7B%7D%7C%5C%5E%5B%5D%60%09%3A%2F%40%24%27%28%29%2A%2C%3B" == strings.escapeURL " ?&=#+%!<>#\"{}|\\^[]`\t:/@$'()*,;")
+  ];
+
   testToInt = testAllTrue [
     # Naive
     (123 == toInt "123")
@@ -474,6 +493,11 @@ runTests {
     expected = [2 30 40 42];
   };
 
+  testReplicate = {
+    expr = replicate 3 "a";
+    expected = ["a" "a" "a"];
+  };
+
   testToIntShouldConvertStringToInt = {
     expr = toInt "27";
     expected = 27;
@@ -494,6 +518,46 @@ runTests {
     expected = false;
   };
 
+  testFindFirstExample1 = {
+    expr = findFirst (x: x > 3) 7 [ 1 6 4 ];
+    expected = 6;
+  };
+
+  testFindFirstExample2 = {
+    expr = findFirst (x: x > 9) 7 [ 1 6 4 ];
+    expected = 7;
+  };
+
+  testFindFirstEmpty = {
+    expr = findFirst (abort "when the list is empty, the predicate is not needed") null [];
+    expected = null;
+  };
+
+  testFindFirstSingleMatch = {
+    expr = findFirst (x: x == 5) null [ 5 ];
+    expected = 5;
+  };
+
+  testFindFirstSingleDefault = {
+    expr = findFirst (x: false) null [ (abort "if the predicate doesn't access the value, it must not be evaluated") ];
+    expected = null;
+  };
+
+  testFindFirstNone = {
+    expr = builtins.tryEval (findFirst (x: x == 2) null [ 1 (throw "the last element must be evaluated when there's no match") ]);
+    expected = { success = false; value = false; };
+  };
+
+  # Makes sure that the implementation doesn't cause a stack overflow
+  testFindFirstBig = {
+    expr = findFirst (x: x == 1000000) null (range 0 1000000);
+    expected = 1000000;
+  };
+
+  testFindFirstLazy = {
+    expr = findFirst (x: x == 1) 7 [ 1 (abort "list elements after the match must not be evaluated") ];
+    expected = 1;
+  };
 
 # ATTRSETS
 
@@ -511,6 +575,37 @@ runTests {
       foo = "bar";
       foobar = "baz";
       foobarbaz = "baz";
+    };
+  };
+
+  # code from example
+  testFoldlAttrs = {
+    expr = {
+      example = foldlAttrs
+        (acc: name: value: {
+          sum = acc.sum + value;
+          names = acc.names ++ [ name ];
+        })
+        { sum = 0; names = [ ]; }
+        {
+          foo = 1;
+          bar = 10;
+        };
+      # should just return the initial value
+      emptySet = foldlAttrs (throw "function not needed") 123 { };
+      # should just evaluate to the last value
+      accNotNeeded = foldlAttrs (_acc: _name: v: v) (throw "accumulator not needed") { z = 3; a = 2; };
+      # the accumulator doesnt have to be an attrset it can be as trivial as being just a number or string
+      trivialAcc = foldlAttrs (acc: _name: v: acc * 10 + v) 1 { z = 1; a = 2; };
+    };
+    expected = {
+      example = {
+        sum = 11;
+        names = [ "bar" "foo" ];
+      };
+      emptySet = 123;
+      accNotNeeded = 3;
+      trivialAcc = 121;
     };
   };
 
@@ -864,6 +959,131 @@ runTests {
     expected  = "«foo»";
   };
 
+  testToPlist =
+    let
+      deriv = derivation { name = "test"; builder = "/bin/sh"; system = "aarch64-linux"; };
+    in {
+    expr = mapAttrs (const (generators.toPlist { })) {
+      value = {
+        nested.values = rec {
+          int = 42;
+          float = 0.1337;
+          bool = true;
+          emptystring = "";
+          string = "fn\${o}\"r\\d";
+          newlinestring = "\n";
+          path = /. + "/foo";
+          null_ = null;
+          list = [ 3 4 "test" ];
+          emptylist = [];
+          attrs = { foo = null; "foo b/ar" = "baz"; };
+          emptyattrs = {};
+        };
+      };
+    };
+    expected = { value = builtins.readFile ./test-to-plist-expected.plist; };
+  };
+
+  testToLuaEmptyAttrSet = {
+    expr = generators.toLua {} {};
+    expected = ''{}'';
+  };
+
+  testToLuaEmptyList = {
+    expr = generators.toLua {} [];
+    expected = ''{}'';
+  };
+
+  testToLuaListOfVariousTypes = {
+    expr = generators.toLua {} [ null 43 3.14159 true ];
+    expected = ''
+      {
+        nil,
+        43,
+        3.14159,
+        true
+      }'';
+  };
+
+  testToLuaString = {
+    expr = generators.toLua {} ''double-quote (") and single quotes (')'';
+    expected = ''"double-quote (\") and single quotes (')"'';
+  };
+
+  testToLuaAttrsetWithLuaInline = {
+    expr = generators.toLua {} { x = generators.mkLuaInline ''"abc" .. "def"''; };
+    expected = ''
+      {
+        ["x"] = ("abc" .. "def")
+      }'';
+  };
+
+  testToLuaAttrsetWithSpaceInKey = {
+    expr = generators.toLua {} { "some space and double-quote (\")" = 42; };
+    expected = ''
+      {
+        ["some space and double-quote (\")"] = 42
+      }'';
+  };
+
+  testToLuaWithoutMultiline = {
+    expr = generators.toLua { multiline = false; } [ 41 43 ];
+    expected = ''{ 41, 43 }'';
+  };
+
+  testToLuaEmptyBindings = {
+    expr = generators.toLua { asBindings = true; } {};
+    expected = "";
+  };
+
+  testToLuaBindings = {
+    expr = generators.toLua { asBindings = true; } { x1 = 41; _y = { a = 43; }; };
+    expected = ''
+      _y = {
+        ["a"] = 43
+      }
+      x1 = 41
+    '';
+  };
+
+  testToLuaPartialTableBindings = {
+    expr = generators.toLua { asBindings = true; } { "x.y" = 42; };
+    expected = ''
+      x.y = 42
+    '';
+  };
+
+  testToLuaIndentedBindings = {
+    expr = generators.toLua { asBindings = true; indent = "  "; } { x = { y = 42; }; };
+    expected = "  x = {\n    [\"y\"] = 42\n  }\n";
+  };
+
+  testToLuaBindingsWithSpace = testingThrow (
+    generators.toLua { asBindings = true; } { "with space" = 42; }
+  );
+
+  testToLuaBindingsWithLeadingDigit = testingThrow (
+    generators.toLua { asBindings = true; } { "11eleven" = 42; }
+  );
+
+  testToLuaBasicExample = {
+    expr = generators.toLua {} {
+      cmd = [ "typescript-language-server" "--stdio" ];
+      settings.workspace.library = generators.mkLuaInline ''vim.api.nvim_get_runtime_file("", true)'';
+    };
+    expected = ''
+      {
+        ["cmd"] = {
+          "typescript-language-server",
+          "--stdio"
+        },
+        ["settings"] = {
+          ["workspace"] = {
+            ["library"] = (vim.api.nvim_get_runtime_file("", true))
+          }
+        }
+      }'';
+  };
 
 # CLI
 

@@ -13,14 +13,14 @@
 
 buildPythonPackage rec {
   pname = "phonopy";
-  version = "2.17.0";
+  version = "2.19.1";
   format = "setuptools";
 
   disabled = pythonOlder "3.7";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-bBlNCfq+b73Z/yxIhmP9s2kgjlGz+EKTpI1CnpuqkuU=";
+    hash = "sha256-ObQuPCDjpjjz4mq831IsU0muNMlDZVoNFAX6PUCTVbU=";
   };
 
   propagatedBuildInputs = [
@@ -32,7 +32,7 @@ buildPythonPackage rec {
     spglib
   ];
 
-  checkInputs = [
+  nativeCheckInputs = [
     pytestCheckHook
   ];
 

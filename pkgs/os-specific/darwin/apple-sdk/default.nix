@@ -320,13 +320,32 @@ in rec {
       '';
     });
 
+    System = lib.overrideDerivation super.System (drv: {
+      installPhase = ''
+        mkdir -p $out/Library/Frameworks/System.framework/Versions/B
+        ln -s $out/Library/Frameworks/System.framework/Versions/{B,Current}
+        ln -s ${pkgs.darwin.Libsystem}/lib/libSystem.B.tbd $out/Library/Frameworks/System.framework/Versions/B/System.tbd
+        ln -s $out/Library/Frameworks/System.framework/{Versions/Current/,}System.tbd
+      '';
+    });
+
     WebKit = lib.overrideDerivation super.WebKit (drv: {
       extraTBDFiles = [
         "Versions/A/Frameworks/WebCore.framework/Versions/A/WebCore.tbd"
         "Versions/A/Frameworks/WebKitLegacy.framework/Versions/A/WebKitLegacy.tbd"
       ];
     });
-  } // lib.genAttrs [ "ContactsPersistence" "CoreSymbolication" "GameCenter" "SkyLight" "UIFoundation" ] (x: tbdOnlyFramework x {});
+  } // lib.genAttrs [
+    "ContactsPersistence"
+    "CoreSymbolication"
+    "DebugSymbols"
+    "DisplayServices"
+    "GameCenter"
+    "MultitouchSupport"
+    "SkyLight"
+    "UIFoundation"
+  ]
+    (x: tbdOnlyFramework x {});
 
   bareFrameworks = lib.mapAttrs framework (import ./frameworks.nix {
     inherit frameworks libs;

@@ -2,24 +2,23 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "procs";
-  version = "0.13.3";
+  version = "0.14.0";
 
   src = fetchFromGitHub {
     owner = "dalance";
-    repo = pname;
+    repo = "procs";
     rev = "v${version}";
-    sha256 = "sha256-JVxlfwCA+EetV4QYB6uEKe1yWt3sCvMPZwyIr6Td7Bw=";
+    hash = "sha256-DoH9XxPRKGd+tex8MdbtkhM+V8C1wDMv/GZcB4aMCPc=";
   };
 
-  cargoSha256 = "sha256-uUxwQIQTzQkKgR4F4sf4J1G2LaXiGbIvA6VM55zLK2E=";
+  cargoHash = "sha256-B+LpUErsvtLYn+Xvq4KNBpLR9WYe38yMWHUNsd9jIs8=";
 
-  nativeBuildInputs = [ installShellFiles ];
-
-  LIBCLANG_PATH = lib.optionals stdenv.isDarwin "${stdenv.cc.cc.lib}/lib/";
+  nativeBuildInputs = [ installShellFiles ]
+    ++ lib.optionals stdenv.isDarwin [ rustPlatform.bindgenHook ];
 
   postInstall = ''
     for shell in bash fish zsh; do
-      $out/bin/procs --completion $shell
+      $out/bin/procs --gen-completion $shell
     done
     installShellCompletion procs.{bash,fish} --zsh _procs
   '';

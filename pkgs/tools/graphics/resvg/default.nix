@@ -2,16 +2,26 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "resvg";
-  version = "0.28.0";
+  version = "0.34.1";
 
   src = fetchFromGitHub {
     owner = "RazrFalcon";
     repo = pname;
     rev = "v${version}";
-    sha256 = "sha256-OEknK4uLINui6U+mz0P9K36pEzfx+TevGvLqM0RXkSM=";
+    hash = "sha256-4sjjd2IKca4NBTCTxhdqdxuzjEMKc85ckRNrNSjhUnE=";
   };
 
-  cargoSha256 = "sha256-L3Km+VIoIun1wjKyJ3dscK5PSfQVR7qyjU6y1j9quSg=";
+  cargoHash = "sha256-PEJjtrsQF4h9rCP1DFFP5EFjW/6ZMgdMCawIc9cW76s=";
+
+  cargoBuildFlags = [
+    "--package=resvg"
+    "--package=resvg-capi"
+    "--package=usvg"
+  ];
+
+  postInstall = ''
+    install -Dm644 -t $out/include crates/c-api/*.h
+  '';
 
   meta = with lib; {
     description = "An SVG rendering library";

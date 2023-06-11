@@ -29,13 +29,13 @@
 
 buildDotnetModule rec {
   pname = "ryujinx";
-  version = "1.1.489"; # Based off of the official github actions builds: https://github.com/Ryujinx/Ryujinx/actions/workflows/release.yml
+  version = "1.1.826"; # Based off of the official github actions builds: https://github.com/Ryujinx/Ryujinx/actions/workflows/release.yml
 
   src = fetchFromGitHub {
     owner = "Ryujinx";
     repo = "Ryujinx";
-    rev = "37d27c4c99486312d9a282d7fc056c657efe0848";
-    sha256 = "0h55vv2g9i81km0jzlb62arlky5ci4i45jyxig3znqr1zb4l0a67";
+    rev = "42b9c1e8fede88880454154f8c3683f1f8424ed9";
+    sha256 = "1r879kvs6v08lrxw75xs5jsffmf8j6bb7bs9szrrgj24aza0kl72";
   };
 
   dotnet-sdk = dotnetCorePackages.sdk_7_0;
@@ -79,16 +79,12 @@ buildDotnetModule rec {
     SDL2
   ];
 
-  patches = [
-    ./appdir.patch # Ryujinx attempts to write to the nix store. This patch redirects it to "~/.config/Ryujinx" on Linux.
-  ];
-
   projectFile = "Ryujinx.sln";
-  testProjectFile = "Ryujinx.Tests/Ryujinx.Tests.csproj";
+  testProjectFile = "src/Ryujinx.Tests/Ryujinx.Tests.csproj";
   doCheck = true;
 
   dotnetFlags = [
-    "/p:ExtraDefineConstants=DISABLE_UPDATER"
+    "/p:ExtraDefineConstants=DISABLE_UPDATER%2CFORCE_EXTERNAL_BASE_DIR"
   ];
 
   executables = [
@@ -113,11 +109,11 @@ buildDotnetModule rec {
     mkdir -p $out/share/{applications,icons/hicolor/scalable/apps,mime/packages}
     pushd ${src}/distribution/linux
 
-    install -D ./ryujinx.desktop $out/share/applications/ryujinx.desktop
-    install -D ./ryujinx-mime.xml $out/share/mime/packages/ryujinx-mime.xml
-    install -D ./ryujinx-logo.svg $out/share/icons/hicolor/scalable/apps/ryujinx.svg
+    install -D ./Ryujinx.desktop $out/share/applications/Ryujinx.desktop
+    install -D ./mime/Ryujinx.xml $out/share/mime/packages/Ryujinx.xml
+    install -D ../misc/Logo.svg $out/share/icons/hicolor/scalable/apps/Ryujinx.svg
 
-    substituteInPlace $out/share/applications/ryujinx.desktop \
+    substituteInPlace $out/share/applications/Ryujinx.desktop \
       --replace "Exec=Ryujinx" "Exec=$out/bin/Ryujinx"
 
     ln -s $out/bin/Ryujinx $out/bin/ryujinx

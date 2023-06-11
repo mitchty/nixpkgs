@@ -12,7 +12,7 @@
 
 buildPythonPackage rec {
   pname = "elkm1-lib";
-  version = "2.2.1";
+  version = "2.2.4";
   format = "pyproject";
 
   disabled = pythonOlder "3.9";
@@ -21,7 +21,7 @@ buildPythonPackage rec {
     owner = "gwww";
     repo = "elkm1";
     rev = "refs/tags/${version}";
-    hash = "sha256-UrdnEafmzO/l1kTcGmPWhujbThVWv4uBH57D2uZB/kw=";
+    hash = "sha256-qqkKsVSspVBVxX96vlM8+6SqfdIBTcVyODJzQ4Ga+6g=";
   };
 
   nativeBuildInputs = [
@@ -33,7 +33,7 @@ buildPythonPackage rec {
     pyserial-asyncio
   ];
 
-  checkInputs = [
+  nativeCheckInputs = [
     pytest-asyncio
     pytestCheckHook
   ];

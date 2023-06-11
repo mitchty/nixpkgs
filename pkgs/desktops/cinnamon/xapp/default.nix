@@ -22,7 +22,7 @@
 
 stdenv.mkDerivation rec {
   pname = "xapp";
-  version = "2.4.2";
+  version = "2.4.3";
 
   outputs = [ "out" "dev" ];
 
@@ -30,7 +30,7 @@ stdenv.mkDerivation rec {
     owner = "linuxmint";
     repo = pname;
     rev = version;
-    hash = "sha256-etB+q7FIwbApTUk8RohAy3kHX8Vb4cSY/qkvhj94yTM=";
+    hash = "sha256-j04vy/uVWY08Xdxqfo2MMUAlqsUMJTsAt67+XjkdhFg=";
   };
 
   nativeBuildInputs = [
@@ -79,11 +79,10 @@ stdenv.mkDerivation rec {
     # Patch pastebin & inxi location
     sed "s|/usr/bin/pastebin|$out/bin/pastebin|" -i scripts/upload-system-info
     sed "s|'inxi'|'${inxi}/bin/inxi'|" -i scripts/upload-system-info
-
-    # Patch gtk3 module target dir
-    substituteInPlace libxapp/meson.build \
-         --replace "gtk3_dep.get_pkgconfig_variable('libdir')" "'$out'"
   '';
+
+  # Fix gtk3 module target dir. Proper upstream solution should be using define_variable.
+  PKG_CONFIG_GTK__3_0_LIBDIR = "${placeholder "out"}/lib";
 
   meta = with lib; {
     homepage = "https://github.com/linuxmint/xapp";

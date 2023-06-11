@@ -1,8 +1,8 @@
-{ lib, stdenv, fetchzip, zlib, xorg, freetype, jdk11, curl }:
+{ lib, stdenv, fetchzip, zlib, xorg, freetype, jdk17, curl }:
 
 stdenv.mkDerivation rec {
   pname = "codeql";
-  version = "2.11.0";
+  version = "2.13.3";
 
   dontConfigure = true;
   dontBuild = true;
@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
 
   src = fetchzip {
     url = "https://github.com/github/codeql-cli-binaries/releases/download/v${version}/codeql.zip";
-    sha256 = "sha256-nY31/coUnBNkKg10SOd64sBBkV44g+eIXyKIrPq1IWU=";
+    sha256 = "sha256-CYc/tFjDFXFlSY4/ykM7OR8HsUbYQUHL5IfGYw7to4k=";
   };
 
   nativeBuildInputs = [
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
     xorg.libXtst
     xorg.libXrender
     freetype
-    jdk11
+    jdk17
     stdenv.cc.cc.lib
     curl
   ];
@@ -34,7 +34,8 @@ stdenv.mkDerivation rec {
 
     ln -sf $out/codeql/tools/linux64/lib64trace.so $out/codeql/tools/linux64/libtrace.so
 
-    sed -i 's%\$CODEQL_DIST/tools/\$CODEQL_PLATFORM/java%\${jdk11}%g' $out/codeql/codeql
+    sed -i 's%\$CODEQL_DIST/tools/\$CODEQL_PLATFORM/java-aarch64%\${jdk17}%g' $out/codeql/codeql
+    sed -i 's%\$CODEQL_DIST/tools/\$CODEQL_PLATFORM/java%\${jdk17}%g' $out/codeql/codeql
 
     ln -s $out/codeql/codeql $out/bin/
   '';

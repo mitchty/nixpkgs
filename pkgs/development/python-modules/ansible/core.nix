@@ -1,5 +1,4 @@
 { lib
-, callPackage
 , buildPythonPackage
 , fetchPypi
 , installShellFiles
@@ -11,6 +10,7 @@
 , ncclient
 , packaging
 , paramiko
+, passlib
 , pexpect
 , psutil
 , pycrypto
@@ -24,11 +24,11 @@
 
 buildPythonPackage rec {
   pname = "ansible-core";
-  version = "2.14.0";
+  version = "2.15.0";
 
   src = fetchPypi {
     inherit pname version;
-    hash = "sha256-+ki0gctiO/ebuQPyIwl2gaDBPhtOx+eOfdfYWNNqNLI=";
+    hash = "sha256-z2kP1Ou0BZDgDFrNwGJHWMpMWNHksrAuwCagNAcOv00=";
   };
 
   # ansible_connection is already wrapped, so don't pass it through
@@ -50,6 +50,7 @@ buildPythonPackage rec {
     cryptography
     jinja2
     packaging
+    passlib
     pyyaml
     resolvelib # This library is a PITA, since ansible requires a very old version of it
     # optional dependencies

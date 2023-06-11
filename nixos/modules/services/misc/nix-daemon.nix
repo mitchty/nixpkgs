@@ -42,7 +42,7 @@ let
         else if isDerivation v then toString v
         else if builtins.isPath v then toString v
         else if isString v then v
-        else if strings.isCoercibleToString v then toString v
+        else if strings.isConvertibleWithToString v then toString v
         else abort "The nix conf value: ${toPretty {} v} can not be encoded";
 
       mkKeyValue = k: v: "${escape [ "=" ] k} = ${mkValueString v}";
@@ -520,10 +520,17 @@ in
                 will set up automatically for each build. This prevents impurities
                 in builds by disallowing access to dependencies outside of the Nix
                 store by using network and mount namespaces in a chroot environment.
+
                 This is enabled by default even though it has a possible performance
                 impact due to the initial setup time of a sandbox for each build. It
                 doesn't affect derivation hashes, so changing this option will not
                 trigger a rebuild of packages.
+
+                When set to "relaxed", this option permits derivations that set
+                `__noChroot = true;` to run outside of the sandboxed environment.
+                Exercise caution when using this mode of operation! It is intended to
+                be a quick hack when building with packages that are not easily setup
+                to be built reproducibly.
               '';
             };
 
@@ -792,7 +799,10 @@ in
         fi
       '';
 
-    nix.nrBuildUsers = mkDefault (max 32 (if cfg.settings.max-jobs == "auto" then 0 else cfg.settings.max-jobs));
+    nix.nrBuildUsers = mkDefault (
+      if cfg.settings.auto-allocate-uids or false then 0
+      else max 32 (if cfg.settings.max-jobs == "auto" then 0 else cfg.settings.max-jobs)
+    );
 
     users.users = nixbldUsers;
 
@@ -816,10 +826,10 @@ in
 
         system-features = mkDefault (
           [ "nixos-test" "benchmark" "big-parallel" "kvm" ] ++
-          optionals (pkgs.hostPlatform ? gcc.arch) (
+          optionals (pkgs.stdenv.hostPlatform ? gcc.arch) (
             # a builder can run code for `gcc.arch` and inferior architectures
-            [ "gccarch-${pkgs.hostPlatform.gcc.arch}" ] ++
-            map (x: "gccarch-${x}") systems.architectures.inferiors.${pkgs.hostPlatform.gcc.arch}
+            [ "gccarch-${pkgs.stdenv.hostPlatform.gcc.arch}" ] ++
+            map (x: "gccarch-${x}") (systems.architectures.inferiors.${pkgs.stdenv.hostPlatform.gcc.arch} or [])
           )
         );
       }

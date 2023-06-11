@@ -7,6 +7,7 @@
 { lib
 , pkgs
 , qt6
+, stdenv
 }:
 
 (lib.makeScope pkgs.newScope ( self:
@@ -24,11 +25,21 @@ let
 in
 
 (qt6 // {
+  inherit stdenv;
+
   # LIBRARIES
 
   inherit (kdeFrameworks) kcoreaddons;
 
+  qt6ct = callPackage ../tools/misc/qt6ct { };
+
+  qtkeychain = callPackage ../development/libraries/qtkeychain {
+    inherit (pkgs.darwin.apple_sdk.frameworks) CoreFoundation Security;
+  };
+
   qtpbfimageplugin = callPackage ../development/libraries/qtpbfimageplugin { };
+
+  qtstyleplugin-kvantum = callPackage ../development/libraries/qtstyleplugin-kvantum { };
 
   quazip = callPackage ../development/libraries/quazip { };
 
