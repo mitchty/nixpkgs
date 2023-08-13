@@ -8,16 +8,16 @@
 
 buildGoModule rec {
   pname = "pscale";
-  version = "0.145.0";
+  version = "0.151.0";
 
   src = fetchFromGitHub {
     owner = "planetscale";
     repo = "cli";
     rev = "v${version}";
-    sha256 = "sha256-0X+cYDlc7yIJTA4O06Y5roj6bL7mQlZK7jIAs0RbM7U=";
+    sha256 = "sha256-w5FNZ7oFA+2weZtEsLX6eOwNyqVreDHg+2FApTsV5L0=";
   };
 
-  vendorHash = "sha256-brfrAD4cJ/MwT9ZiwN6a25vCWTcRMiszbuLWj3Lk2Kc=";
+  vendorHash = "sha256-I/cZa5IDmnYw/MU5h7jarYqbTY+5NrDDj5pz9WTcvGo=";
 
   ldflags = [
     "-s" "-w"

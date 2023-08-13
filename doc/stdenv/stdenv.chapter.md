@@ -464,10 +464,8 @@ The commit object contains the following values:
 
 If the returned array contains exactly one object (e.g. `[{}]`), all values are optional and will be determined automatically.
 
-```{=docbook}
-<example>
-<title>Standard output of an update script using commit feature</title>
-```
+::: {.example #var-passthru-updateScript-example-commit}
+# Standard output of an update script using commit feature
 
 ```json
 [
@@ -481,10 +479,7 @@ If the returned array contains exactly one object (e.g. `[{}]`), all values are 
   }
 ]
 ```
-
-```{=docbook}
-</example>
-```
+:::
 
 ### Recursive attributes in `mkDerivation` {#mkderivation-recursive-attributes}
 
@@ -619,13 +614,18 @@ The list of source files or directories to be unpacked or copied. One of these m
 
 ##### `sourceRoot` {#var-stdenv-sourceRoot}
 
-After running `unpackPhase`, the generic builder changes the current directory to the directory created by unpacking the sources. If there are multiple source directories, you should set `sourceRoot` to the name of the intended directory. Set `sourceRoot = ".";` if you use `srcs` and control the unpack phase yourself.
+After unpacking all of `src` and `srcs`, if neither of `sourceRoot` and `setSourceRoot` are set, `unpackPhase` of the generic builder checks that the unpacking produced a single directory and moves the current working directory into it.
 
-By default the `sourceRoot` is set to `"source"`. If you want to point to a sub-directory inside your project, you therefore need to set `sourceRoot = "source/my-sub-directory"`.
+If `unpackPhase` produces multiple source directories, you should set `sourceRoot` to the name of the intended directory.
+You can also set `sourceRoot = ".";` if you want to control it yourself in a later phase.
+
+For example, if your want your build to start in a sub-directory inside your sources, and you are using `fetchzip`-derived `src` (like `fetchFromGitHub` or similar), you need to set `sourceRoot = "${src.name}/my-sub-directory"`.
 
 ##### `setSourceRoot` {#var-stdenv-setSourceRoot}
 
 Alternatively to setting `sourceRoot`, you can set `setSourceRoot` to a shell command to be evaluated by the unpack phase after the sources have been unpacked. This command must set `sourceRoot`.
+
+For example, if you are using `fetchurl` on an archive file that gets unpacked into a single directory the name of which changes between package versions, and you want your build to start in its sub-directory, you need to set `setSourceRoot = "sourceRoot=$(echo */my-sub-directory)";`, or in the case of multiple sources, you could use something more specific, like `setSourceRoot = "sourceRoot=$(echo ${pname}-*/my-sub-directory)";`.
 
 ##### `preUnpack` {#var-stdenv-preUnpack}
 
@@ -971,7 +971,8 @@ to `~/.gdbinit`. GDB will then be able to find debug information installed via `
 
 The installCheck phase checks whether the package was installed correctly by running its test suite against the installed directories. The default `installCheck` calls `make installcheck`.
 
-It is often better to add tests that are not part of the source distribution to `passthru.tests` (see <xref linkend="var-meta-tests"/>). This avoids adding overhead to every build and enables us to run them independently.
+It is often better to add tests that are not part of the source distribution to `passthru.tests` (see
+[](#var-meta-tests)). This avoids adding overhead to every build and enables us to run them independently.
 
 #### Variables controlling the installCheck phase {#variables-controlling-the-installcheck-phase}
 
@@ -1234,7 +1235,7 @@ This runs the strip command on installed binaries and libraries. This removes un
 
 This setup hook patches installed scripts to add Nix store paths to their shebang interpreter as found in the build environment. The [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) line tells a Unix-like operating system which interpreter to use to execute the script's contents.
 
-::: note
+::: {.note}
 The [generic builder][generic-builder] populates `PATH` from inputs of the derivation.
 :::
 
@@ -1272,7 +1273,7 @@ patchShebangs --build configure
 
 Interpreter paths that point to a valid Nix store location are not changed.
 
-::: note
+::: {.note}
 A script file must be marked as executable, otherwise it will not be
 considered.
 :::

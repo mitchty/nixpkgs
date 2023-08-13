@@ -130,8 +130,6 @@ let
 
     # e.g. "defconfig"
     kernelBaseConfig = if defconfig != null then defconfig else stdenv.hostPlatform.linux-kernel.baseConfig or "defconfig";
-    # e.g. "bzImage"
-    kernelTarget = stdenv.hostPlatform.linux-kernel.target or "vmlinux";
 
     makeFlags = lib.optionals (stdenv.hostPlatform.linux-kernel ? makeFlags) stdenv.hostPlatform.linux-kernel.makeFlags
       ++ extraMakeFlags;
@@ -222,7 +220,7 @@ let
             + toString (lib.attrNames (if lib.isAttrs args then args else args {}))
           ) overridableKernel;
       };
-    in [ (nixosTests.kernel-generic.testsForKernel overridableKernel) ] ++ kernelTests;
+    in [ (nixosTests.kernel-generic.passthru.testsForKernel overridableKernel) ] ++ kernelTests;
   };
 
   finalKernel = lib.extendDerivation true passthru kernel;

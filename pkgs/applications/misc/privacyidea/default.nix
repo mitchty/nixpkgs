@@ -103,6 +103,7 @@ let
           inherit version;
           hash = "sha256-0rUlXHxjSbwb0eWeCM0SrLvWPOZJ8liHVXg6qU37axo=";
         };
+        disabledTests = [ "test_bytes_args" ]; # https://github.com/pallets/click/commit/6e05e1fa1c2804
       });
       # Now requires `lingua` as check input that requires a newer `click`,
       # however `click-7` is needed by the older flask we need here. Since it's just
@@ -141,9 +142,6 @@ let
         sphinxHook = null;
         sphinx-better-theme = null;
       }).overridePythonAttrs dropDocOutput;
-      hypothesis = super.hypothesis.override {
-        enableDocumentation = false;
-      };
       pyjwt = (super.pyjwt.override {
         sphinxHook = null;
         sphinx-rtd-theme = null;

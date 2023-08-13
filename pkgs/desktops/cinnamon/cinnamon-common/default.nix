@@ -9,6 +9,7 @@
 , cjs
 , evolution-data-server
 , fetchFromGitHub
+, fetchpatch
 , gdk-pixbuf
 , gettext
 , libgnomekbd
@@ -72,18 +73,25 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "cinnamon-common";
-  version = "5.6.8";
+  version = "5.8.4";
 
   src = fetchFromGitHub {
     owner = "linuxmint";
     repo = "cinnamon";
     rev = version;
-    hash = "sha256-qL8GaEH/0d4yEwwdaR55fTp0RitbyptoxKOBO3nmbic=";
+    hash = "sha256-34kOSDIU56cSZ4j0FadVfr9HLQytnK4ys88DFF7LTiM=";
   };
 
   patches = [
     ./use-sane-install-dir.patch
     ./libdir.patch
+
+    # Backport pillow 10.0.0 support.
+    # https://github.com/linuxmint/cinnamon/issues/11746
+    (fetchpatch {
+      url = "https://github.com/linuxmint/cinnamon/commit/fce9aad1ebb290802dc550e8dae6344dddf9dec1.patch";
+      hash = "sha256-flt7CblfXlLieAVNeC8TBnv1TX0Zca1obPWusBMnIxE=";
+    })
   ];
 
   buildInputs = [
@@ -166,6 +174,7 @@ stdenv.mkDerivation rec {
       substituteInPlace ./bin/SettingsWidgets.py          --replace "/usr/share/sounds" "/run/current-system/sw/share/sounds"
       substituteInPlace ./bin/Spices.py                   --replace "msgfmt" "${gettext}/bin/msgfmt"
       substituteInPlace ./modules/cs_info.py              --replace "lspci" "${pciutils}/bin/lspci"
+      substituteInPlace ./modules/cs_themes.py            --replace "$out/share/cinnamon/styles.d" "/run/current-system/sw/share/cinnamon/styles.d"
     popd
 
     sed "s| cinnamon-session| ${cinnamon-session}/bin/cinnamon-session|g" -i ./files/usr/bin/cinnamon-session-{cinnamon,cinnamon2d}
