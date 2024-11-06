@@ -1,11 +1,22 @@
-{
-  lib,
-  buildNpmPackage,
-  fetchFromGitHub,
-  python311,
-  nixosTests,
+{ lib
+, pkgs
+, buildNpmPackage
+, fetchFromGitHub
+, python311
+, nixosTests
+, nltk-data
+, symlinkJoin
+,
 }:
 let
+  nltkData = symlinkJoin {
+    name = "nltk-data";
+    paths = [
+      nltk-data.punkt
+      nltk-data.stopwords
+    ];
+  };
+
   pname = "open-webui";
   version = "0.3.35";
 
@@ -51,7 +62,10 @@ python311.pkgs.buildPythonApplication rec {
       --replace-fail ', build = "open_webui/frontend"' ""
   '';
 
-  env.HATCH_BUILD_NO_HOOKS = true;
+  env = {
+    HATCH_BUILD_NO_HOOKS = true;
+    NLTK_DATA = nltkData;
+  };
 
   pythonRelaxDeps = true;
 
@@ -78,6 +92,7 @@ python311.pkgs.buildPythonApplication rec {
     docx2txt
     duckduckgo-search
     einops
+    emoji
     extract-msg
     fake-useragent
     fastapi
@@ -89,9 +104,11 @@ python311.pkgs.buildPythonApplication rec {
     qdrant-client
     google-generativeai
     googleapis-common-protos
+    iso-639
     langchain
     langchain-chroma
     langchain-community
+    langdetect
     langfuse
     markdown
     nltk
